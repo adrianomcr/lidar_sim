@@ -32,6 +32,7 @@ roslaunch lidar_sim example.launch
 - Plane
 - Sphere
 - Cylinder
+- Ellipsoid
 
 
 ## Contact
