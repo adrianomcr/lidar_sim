@@ -630,7 +630,7 @@ int main(int argc, char **argv) {
     transformStamped.transform.rotation.x = quat(1);
     transformStamped.transform.rotation.y = quat(2);
     transformStamped.transform.rotation.z = quat(3);
-    // br.sendTransform(transformStamped);
+    br.sendTransform(transformStamped);
 
     //Publish pointcloud after 0.1 seconds
     cloud_msg.header.stamp = ros::Time::now();

@@ -9,8 +9,8 @@
     <node pkg="lidar_sim" name="physics" type="sim_drone" output="screen">
 	</node>
 
-    <!-- <node pkg="rviz" name="rviz" type="rviz" args="-d $(find lidar_sim)/rviz/config.rviz">
-	</node> -->
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find lidar_sim)/rviz/config.rviz">
+	</node>
 
     <!-- <node pkg="tf" type="static_transform_publisher" name="aux_link" args="0 20 4 0 0 0 /world /sensor_init 100">
 	</node> -->
