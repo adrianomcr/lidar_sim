@@ -658,6 +658,19 @@
     "rotation": [],
     "bounds": []
   },
+  "SPHERE_0001": {
+    "description": "A test sphere",
+    "type": "sphere",
+    "center": [
+      -5,
+      10,
+      0
+    ],
+    "axis": [],
+    "radius": 2,
+    "size": [],
+    "rotation": []
+  },
   "CYLINDER_0031": {
     "description": "Airplane left internal engine",
     "type": "cylinder",

@@ -6,9 +6,6 @@ using namespace std;
 using namespace Eigen;
 
 
-
-// constructor
-
 plane_class::plane_class(VectorXd n_0, double d_0){
 
   VectorXd n_init(3);

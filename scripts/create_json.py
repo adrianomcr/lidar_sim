@@ -109,13 +109,6 @@ if __name__ == "__main__":
 
     params = json_generator()
 
-    # params.add_plane(center=[0,0,0], axis=[0,0,1], description='Main floors')
-    # params.add_sphere(center=[-2,0,5], radius=1, description='Floating sphere')
-    # params.add_cylinder(description='Pillar', center=[3,3,0], axis=[0,0,1], radius=1)
-    # params.add_ellipsoid(center=[0,-3,0],size=[2,1,0.5], description='My ellipsoid')
-    # params.add_ellipsoid(center=[0,-3,0],size=[2,1,0.5]) #test with no description
-
-
     # Planes
     params.add_plane(center=[0,0,0], axis=[0,0,1], description='Hangar main floor')
     params.add_plane(center=[5,0,0], axis=[1,0,0], description='Hangar wall')
@@ -156,6 +149,9 @@ if __name__ == "__main__":
     params.add_cylinder(center=[5,0,14], axis=[0,1,0], radius=0.4, description='Hangar horizontal wall structure')
     params.add_cylinder(center=[-65,0,7], axis=[0,1,0], radius=0.4, description='Hangar horizontal wall structure')
     params.add_cylinder(center=[-65,0,14], axis=[0,1,0], radius=0.4, description='Hangar horizontal wall structure')
+
+    # Spheres
+    params.add_sphere(center=[-5,10,0], radius=2, description='A test sphere')
 
 
 

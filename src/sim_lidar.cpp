@@ -109,6 +109,7 @@ void callback_odom(const nav_msgs::Odometry::ConstPtr& msg){
 
 
 
+
 void computation_task(int first, int last, float *r, float *d, float *a, double *t, Eigen::Vector3d *pts, bool *f)
 {
 
@@ -117,11 +118,9 @@ void computation_task(int first, int last, float *r, float *d, float *a, double 
     for (int j = first; j<last; j++){
       double phi = j*(PI/4.0)/(N_V*1.0) - PI/8.0;
 
-      // std::cout << "" << std::endl;
       for (int i = 0; i<N_A; i++){
         double theta = i*2.0*PI/(N_A*1.0);
         theta = 2*PI-theta;
-        // std::cout << theta << std::endl;
 
         count = 0;
 
@@ -218,9 +217,6 @@ void computation_task(int first, int last, float *r, float *d, float *a, double 
 
 int load_world_file(const std::string& filename)
 {
-
-
-  // std::ifstream file("/home/NEA.com/adriano.rezende/simulation_ws/src/lidar_sim/config/test.json");
   std::ifstream file(filename);
   
   if (!file.is_open()) {
@@ -275,10 +271,8 @@ int load_world_file(const std::string& filename)
       ellipsoids.push_back( new ellipsoid_class(size(0),size(1),size(2), center(0),center(1),center(2)));
     }
     else{
-      std::cout << "\33[91mUnrecognized type: " << type << "\33[0m" << std::endl;
+      std::cout << "\33[91mUnrecognized geometric primitive type: " << type << "\33[0m" << std::endl;
     }
-
-    // std::cout << std::endl;
 
   }
 
@@ -289,12 +283,7 @@ int load_world_file(const std::string& filename)
 
 
 
-
-
-
 int main(int argc, char **argv) {
-
-//alt_ref = atof(argv[1]);
 
   //Initialize the node
   ros::init(argc, argv, "lidar_sim");
@@ -305,10 +294,6 @@ int main(int argc, char **argv) {
   if (argc > 1) {
     filename = argv[1];
   }
-
-//   //Rread the curves parameters in the config files
-//   ros::NodeHandle nh2("lidar_sim");
-//   read_parameters(nh2);
 
   ros::Subscriber ekf_sub = nh.subscribe<nav_msgs::Odometry>("/lidar_odom_gt", 1, callback_odom);
   ros::Publisher pub_points = nh.advertise<sensor_msgs::PointCloud2>("/velodyne_points", 1);
@@ -321,19 +306,15 @@ int main(int argc, char **argv) {
   std_msgs::Bool bool_msg;
   bool_msg.data = false;
 
-
   pos << 0,0,2;
   quat << 1,0,0,0;
   vel << 0,0,0;
   omega << 0,0,0;
 
-
-  // if (load_world_file("/home/NEA.com/adriano.rezende/simulation_ws/src/lidar_sim/config/test.json") != 0){
   if (load_world_file(filename) != 0){
     std::cerr << "\33[91mlidar_sim failed to read world file: " << filename << "\33[0m\n";
     return 1;
   }
-
 
   x << 0.0, 0.0, 2.0;
   R << 1.0, 0.0, 0.0,
@@ -497,16 +478,12 @@ int main(int argc, char **argv) {
       
     }
 
-
     std::cout << "\33[94m" << ros::Time::now().toSec()-secs << "\t" << 0.1/(ros::Time::now().toSec()-secs) << "\33[0m" << std::endl;
     if(ros::Time::now().toSec()-secs > 0.1){
         std::cout << "\33[93m[WARNING] LiDAR simulator is taking too long to compute pointcloud: " <<  ros::Time::now().toSec()-secs << " seconds\33[0m" << std::endl;
     }
 
-
     loop_rate.sleep();
-
-
 
     transformStamped.header.stamp = ros::Time::now();
     transformStamped.header.frame_id = "world";
@@ -523,8 +500,6 @@ int main(int argc, char **argv) {
     //Publish pointcloud after 0.1 seconds
     cloud_msg.header.stamp = ros::Time::now();
     pub_points.publish(cloud_msg);
-
-
 
   }
 

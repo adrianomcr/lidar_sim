@@ -6,11 +6,6 @@ using namespace std;
 using namespace Eigen;
 
 
-
-// constructor
-
-
-
 cylinder_class::cylinder_class(VectorXd n_0, VectorXd p_0, double r_0){
 
   VectorXd n_init(3), p_init(3);
@@ -49,8 +44,6 @@ cylinder_class::cylinder_class(double nx, double ny, double nz, double px, doubl
 
 
 cylinder_class::cylinder_class(double nx, double ny, double nz, double px, double py, double pz, double r_0, double lb0, double ub0){
-
-
 
   VectorXd n_init(3), p_init(3);
   n_init << nx, ny, nz;
@@ -107,11 +100,6 @@ double cylinder_class::compute_distance(VectorXd position, VectorXd direction){
 
   Eigen::Vector3d Z;
   float vn = v.dot(n);
-
-  // Z = (x-p)-(n.dot(x-p))*n;
-  // A = 1.0-(v.dot(n))*(v.dot(n));
-  // B = 2.0*(v.dot(Z) - (v.dot(n))*(n.dot(Z)));
-  // C = Z.dot(Z)-r*r;
 
   Z = (x-p)-(n.dot(x-p))*n;
   A = 1.0-vn*vn;
