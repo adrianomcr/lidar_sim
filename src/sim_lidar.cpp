@@ -23,7 +23,6 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
 
-// #include <sensor_msgs/convertPointCloud2ToPointCloud.h>
 #include <sensor_msgs/point_field_conversion.h>
 #include <sensor_msgs/PointField.h>
 
@@ -37,6 +36,11 @@
 
 #include <thread>
 
+
+#include <fstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 // #include <pcl_ros/point_cloud.h>
 // #include <pcl/point_types.h>
 // #include <pcl_conversions/pcl_conversions.h>
@@ -47,8 +51,8 @@
 
 // #define THREAD_1
 // #define THREAD_2
-#define THREAD_4
-// #define THREAD_8
+// #define THREAD_4
+#define THREAD_8
 
 
 
@@ -96,17 +100,11 @@ Eigen::Vector3d vel;
 Eigen::Vector3d omega;
 // callback for lidar ground truth odometry
 void callback_odom(const nav_msgs::Odometry::ConstPtr& msg){
-
   pos << msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z;
   quat << msg->pose.pose.orientation.w, msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z;
   vel << msg->twist.twist.linear.x, msg->twist.twist.linear.y, msg->twist.twist.linear.z;
   omega << msg->twist.twist.angular.x, msg->twist.twist.angular.y, msg->twist.twist.angular.z;
-
-
 }
-
-
-
 
 
 
@@ -216,6 +214,84 @@ void computation_task(int first, int last, float *r, float *d, float *a, double 
 
 
 
+
+
+int load_world_file(const std::string& filename)
+{
+
+
+  // std::ifstream file("/home/NEA.com/adriano.rezende/simulation_ws/src/lidar_sim/config/test.json");
+  std::ifstream file(filename);
+  
+  if (!file.is_open()) {
+      std::cerr << "\33[91mFailed to open the file.\33[0m\n";
+      return 1;
+  }
+  json jsonData;
+  file >> jsonData;
+
+  Eigen::Vector3d axis, center, size;
+  float radius, lb, ub;
+
+  // Iterate over the fields of the JSON object
+  for (auto& element : jsonData.items()) {
+      // Access the key and value of each field
+      const std::string& key = element.key();
+      const json& value = element.value();
+
+      const std::string& description = value["description"];
+      const std::string& type = value["type"];
+
+    if(type=="plane"){
+      axis << value["axis"][0], value["axis"][1], value["axis"][2];
+      center << value["center"][0], value["center"][1], value["center"][2];
+      std::cout << "Adding plane: " << description << std::endl;
+      planes.push_back( new plane_class(axis(0),axis(1),axis(2), center(0),center(1),center(2)));
+    }
+    else if(type=="sphere"){
+      center << value["center"][0], value["center"][1], value["center"][2];
+      radius = value["radius"];
+      std::cout << "Adding sphere: " << description << std::endl;
+      spheres.push_back( new sphere_class(center(0),center(1),center(2), radius));
+    }
+    else if(type=="cylinder"){
+      axis << value["axis"][0], value["axis"][1], value["axis"][2];
+      center << value["center"][0], value["center"][1], value["center"][2];
+      radius = value["radius"];
+      std::cout << "Adding cylinder: " << description << std::endl;
+      if(value["bounds"].empty()){
+        cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius));
+      }
+      else{
+        lb = value["bounds"][0];
+        ub = value["bounds"][1];
+        cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius, lb, ub));
+      }
+    }
+    else if(type=="ellipsoid"){
+      size << value["size"][0], value["size"][1], value["size"][2];
+      center << value["center"][0], value["center"][1], value["center"][2];
+      std::cout << "Adding ellipsoid: " << description << std::endl;
+      ellipsoids.push_back( new ellipsoid_class(size(0),size(1),size(2), center(0),center(1),center(2)));
+    }
+    else{
+      std::cout << "\33[91mUnrecognized type: " << type << "\33[0m" << std::endl;
+    }
+
+    // std::cout << std::endl;
+
+  }
+
+  return 0;
+
+}
+
+
+
+
+
+
+
 int main(int argc, char **argv) {
 
 //alt_ref = atof(argv[1]);
@@ -224,13 +300,17 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "lidar_sim");
   ros::NodeHandle nh;
 
+  std::string filename;
+
+  if (argc > 1) {
+    filename = argv[1];
+  }
+
 //   //Rread the curves parameters in the config files
 //   ros::NodeHandle nh2("lidar_sim");
 //   read_parameters(nh2);
 
   ros::Subscriber ekf_sub = nh.subscribe<nav_msgs::Odometry>("/lidar_odom_gt", 1, callback_odom);
-
-
   ros::Publisher pub_points = nh.advertise<sensor_msgs::PointCloud2>("/velodyne_points", 1);
 
 
@@ -248,9 +328,11 @@ int main(int argc, char **argv) {
   omega << 0,0,0;
 
 
-
-  
-
+  // if (load_world_file("/home/NEA.com/adriano.rezende/simulation_ws/src/lidar_sim/config/test.json") != 0){
+  if (load_world_file(filename) != 0){
+    std::cerr << "\33[91mlidar_sim failed to read world file: " << filename << "\33[0m\n";
+    return 1;
+  }
 
 
   x << 0.0, 0.0, 2.0;
@@ -258,99 +340,14 @@ int main(int argc, char **argv) {
        0.0, 1.0, 0.0,
        0.0, 0.0, 1.0;
 
-  //Planes
-  // std::vector<plane_class *> planes;
-  planes.push_back( new plane_class(0,0,1, 0));
-  // planes.push_back( new plane_class(-1,0,0, -8));
-  // planes.push_back( new plane_class(0,1,0, -20));
-  // planes.push_back( new plane_class(0,1,0, 40));
-  planes.push_back( new plane_class(1,0,0, 5));
-  planes.push_back( new plane_class(1,0,0, -65));
-  planes.push_back( new plane_class(0,1,0, 30));
-  planes.push_back( new plane_class(0,1,0, -30));
-  planes.push_back( new plane_class(0,0.3,1, 25));
-  planes.push_back( new plane_class(0,-0.3,1, 25));
-
-  //Spheres
-  // std::vector<sphere_class *> spheres;
-  // spheres.push_back( new sphere_class(-10,15,4, 2));
-  spheres.push_back( new sphere_class(-30,5,0-5, 4));
-
-  //Cylinder
-  // std::vector<cylinder_class *> cylinders;
-  // cylinders.push_back( new cylinder_class(0,0,1, -10,-10,0, 1));
-  // cylinders.push_back( new cylinder_class(0,0,1 ,-3,6,0, 0.8));
-  // cylinders.push_back( new cylinder_class(0,-1,1 ,-20,6,0, 0.6 ,3,10));
-  // cylinders.push_back( new cylinder_class(0,1,0 ,-12,0,6, 0.2));
-  // cylinders.push_back( new cylinder_class(0,0,1, -14,-10,0, 1 ,0,1));
-  // cylinders.push_back( new cylinder_class(0,0,1, -18,-10,0, 1,0,2));
-  // cylinders.push_back( new cylinder_class(0,0,1, -22,-10,0, 1,0,3));
-  // cylinders.push_back( new cylinder_class(0,0,1, -26,-10,0, 1,0,4));
-  //
-  //Airplane
-  cylinders.push_back( new cylinder_class(1,0,0, -23,8,4.5, 1.5,-1,4));
-  cylinders.push_back( new cylinder_class(1,0,0, -23,-8,4.5, 1.5,-1,4));
-  cylinders.push_back( new cylinder_class(1,0,0, -24,15,4.5, 1,-1,4));
-  cylinders.push_back( new cylinder_class(1,0,0, -24,-15,4.5, 1,-1,4));
-  //Hangar
-  cylinders.push_back( new cylinder_class(0,1,0.3, -10,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0.3, -20,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0.3, -30,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0.3, -40,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0.3, -50,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,-0.3, -10,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,-0.3, -20,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,-0.3, -30,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,-0.3, -40,0,26, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,-0.3, -50,0,26, 0.4));
-  //
-  cylinders.push_back( new cylinder_class(0,0,1.0, -10,30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -20,30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -30,30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -40,30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -50,30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -10,-30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -20,-30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -30,-30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -40,-30,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -50,-30,0, 0.4));
-  //
-  cylinders.push_back( new cylinder_class(0,0,1.0, 5,0,0, 0.4));
-  cylinders.push_back( new cylinder_class(0,0,1.0, -65,0,0, 0.4));
-  //
-  cylinders.push_back( new cylinder_class(1,0,0, 0,30,7, 0.4));
-  cylinders.push_back( new cylinder_class(1,0,0, 0,30,14, 0.4));
-  cylinders.push_back( new cylinder_class(1,0,0, 0,-30,7, 0.4));
-  cylinders.push_back( new cylinder_class(1,0,0, 0,-30,14, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0, 5,0,7, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0, 5,0,14, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0, -65,0,7, 0.4));
-  cylinders.push_back( new cylinder_class(0,1,0, -65,0,14, 0.4));
-
-  //Surfaces
-  // std::vector<surface_class *> surfaces;
-  // surfaces.push_back( new surface_class(0.2,0,1, -10));
-
-  //Ellipsoid
-  // std::vector<ellipsoid_class *> ellipsoids;
-  ellipsoids.push_back( new ellipsoid_class(-30,0,5, 28,4,4));
-  ellipsoids.push_back( new ellipsoid_class(-27,0,6, 5,25,0.5));
-  ellipsoids.push_back( new ellipsoid_class(-52,0,11, 2.5,0.5,8));
-  ellipsoids.push_back( new ellipsoid_class(-52,0,16, 4,8,0.6));
-  // ellipsoids.push_back( new ellipsoid_class(-10,6,0, 1,1,1));
-  // ellipsoids.push_back( new ellipsoid_class(-5,0,5, 8,3,3));
-
   int count = 0;
 
   double freq = 10;
   //Define the frequency
   ros::Rate loop_rate(freq);
 
-
   double A,B,C;
   Eigen::Vector3d Z;
-
-
 
 
   while (ros::ok()){
@@ -410,9 +407,6 @@ int main(int argc, char **argv) {
     th7.join();
 #endif
 
-
-
-//####################################################################################################################################################################################################################################################
 
 
     const uint32_t POINT_STEP = 48;
@@ -504,107 +498,6 @@ int main(int argc, char **argv) {
     }
 
 
-  //####################################################################################################################################################################################################################################################
-
-
-  // //####################################################################################################################################################################################################################################################
-
-
-  //   const uint32_t POINT_STEP = 35;//14;// 48;
-  //   cloud_msg.header.frame_id = "lidar";
-  //   cloud_msg.header.stamp = ros::Time::now();
-  //   cloud_msg.fields.resize(9);
-  //   cloud_msg.fields[0].name = "x";
-  //   cloud_msg.fields[0].offset = 0;
-  //   cloud_msg.fields[0].datatype = sensor_msgs::PointField::FLOAT32; // 7
-  //   cloud_msg.fields[0].count = 1;
-  //   //
-  //   cloud_msg.fields[1].name = "y";
-  //   cloud_msg.fields[1].offset = 4;
-  //   cloud_msg.fields[1].datatype = sensor_msgs::PointField::FLOAT32; // 7
-  //   cloud_msg.fields[1].count = 1;
-  //   //
-  //   cloud_msg.fields[2].name = "z";
-  //   cloud_msg.fields[2].offset = 8;
-  //   cloud_msg.fields[2].datatype = sensor_msgs::PointField::FLOAT32; // 7
-  //   cloud_msg.fields[2].count = 1;
-  //   //
-  //   cloud_msg.fields[3].name = "ring";
-  //   cloud_msg.fields[3].offset = 12; //28;
-  //   cloud_msg.fields[3].datatype = sensor_msgs::PointField::UINT16; // 4
-  //   cloud_msg.fields[3].count = 1;
-  //   //
-  //   cloud_msg.fields[4].name = "time";
-  //   cloud_msg.fields[4].offset = 14;
-  //   cloud_msg.fields[4].datatype = sensor_msgs::PointField::FLOAT64; // 8
-  //   cloud_msg.fields[4].count = 1;
-  //   //
-  //   cloud_msg.fields[5].name = "azimuth";
-  //   cloud_msg.fields[5].offset = 22;
-  //   cloud_msg.fields[5].datatype = sensor_msgs::PointField::FLOAT32; // 7
-  //   cloud_msg.fields[5].count = 1;
-  //   //
-  //   cloud_msg.fields[6].name = "distance";
-  //   cloud_msg.fields[6].offset = 26;
-  //   cloud_msg.fields[6].datatype = sensor_msgs::PointField::FLOAT32; // 7
-  //   cloud_msg.fields[6].count = 1;
-  //   //
-  //   cloud_msg.fields[7].name = "intensity";
-  //   cloud_msg.fields[7].offset = 30;
-  //   cloud_msg.fields[7].datatype = sensor_msgs::PointField::FLOAT32; // 7
-  //   cloud_msg.fields[7].count = 1;
-  //   //
-  //   cloud_msg.fields[8].name = "return_number";
-  //   cloud_msg.fields[8].offset = 34;
-  //   cloud_msg.fields[8].datatype = sensor_msgs::PointField::UINT8; // 2
-  //   cloud_msg.fields[8].count = 1;
-  //   //
-  //   //
-  //   size_t n_detected_points = 0;
-  //   for(int i = 0; i<N_A*N_V; i++){
-  //     if(flag_arr[i]==true){
-  //       n_detected_points++;
-  //     }
-  //   }
-  //   // cloud_msg.data.resize(std::max((size_t)1, cloud_msg1.points.size()) * POINT_STEP, 0x00);
-  //   cloud_msg.data.resize(std::max((size_t)1, n_detected_points) * POINT_STEP, 0x00);
-  //   // cloud_msg.data.resize(n_detected_points * POINT_STEP, 0x00);
-  //   cloud_msg.point_step = POINT_STEP;
-  //   cloud_msg.row_step = cloud_msg.data.size();
-  //   cloud_msg.height = 1;
-  //   cloud_msg.width = cloud_msg.row_step / POINT_STEP;
-  //   cloud_msg.is_bigendian = false;
-  //   cloud_msg.is_dense = true;
-  //   uint8_t *ptr = cloud_msg.data.data();
-
-  //   for (size_t i = 0; i < N_A*N_V; i++)
-  //   {
-  //     // std::cout << flag_arr[i] << std::endl;
-  //     if(flag_arr[i]==true){
-  //       *(reinterpret_cast<float*>(ptr +  0)) = points_arr[i](0);
-  //       *(reinterpret_cast<float*>(ptr +  4)) = points_arr[i](1);
-  //       *(reinterpret_cast<float*>(ptr +  8)) = points_arr[i](2);
-  //       *(reinterpret_cast<uint16_t*>(ptr +  12)) = ring_arr[i];
-  //       //
-  //       *(reinterpret_cast<double*>(ptr +  14)) = time_arr[i];
-  //       *(reinterpret_cast<float*>(ptr +  22)) = azimuth_arr[i];
-  //       *(reinterpret_cast<float*>(ptr +  26)) = dist_arr[i];
-  //       //
-  //       *(reinterpret_cast<float*>(ptr +  30)) = 60;//azimuth_arr[i];
-  //       *(reinterpret_cast<uint8_t*>(ptr +  34)) = 1;
-        
-  //       ptr += POINT_STEP;
-  //     }
-      
-  //   }
-
-
-  // //####################################################################################################################################################################################################################################################
-
-
-
-
-
     std::cout << "\33[94m" << ros::Time::now().toSec()-secs << "\t" << 0.1/(ros::Time::now().toSec()-secs) << "\33[0m" << std::endl;
     if(ros::Time::now().toSec()-secs > 0.1){
         std::cout << "\33[93m[WARNING] LiDAR simulator is taking too long to compute pointcloud: " <<  ros::Time::now().toSec()-secs << " seconds\33[0m" << std::endl;
@@ -612,11 +505,6 @@ int main(int argc, char **argv) {
 
 
     loop_rate.sleep();
-    //double migue = ros::Time::now().toSec();
-    //while(ros::Time::now().toSec()-migue<0.07){
-    //	double aaaa = 1;
-    //	aaaa = aaaa*aaaa;
-    //}
 
 
 

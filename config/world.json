@@ -1,0 +1,813 @@
+{
+  "PLANE_0001": {
+    "description": "Hangar main floor",
+    "type": "plane",
+    "center": [
+      0,
+      0,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "PLANE_0002": {
+    "description": "Hangar wall",
+    "type": "plane",
+    "center": [
+      5,
+      0,
+      0
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "PLANE_0003": {
+    "description": "Hangar wall",
+    "type": "plane",
+    "center": [
+      -65,
+      0,
+      0
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "PLANE_0004": {
+    "description": "Hangar wall",
+    "type": "plane",
+    "center": [
+      0,
+      30,
+      0
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "PLANE_0005": {
+    "description": "Hangar wall",
+    "type": "plane",
+    "center": [
+      0,
+      -30,
+      0
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "PLANE_0006": {
+    "description": "Hangar ceiling",
+    "type": "plane",
+    "center": [
+      0,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      0.3,
+      1
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "PLANE_0007": {
+    "description": "Hangar ceiling",
+    "type": "plane",
+    "center": [
+      0,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      -0.3,
+      1
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": []
+  },
+  "CYLINDER_0001": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -10,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0002": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -20,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0003": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -30,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0004": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -40,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0005": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -50,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0006": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -10,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      -0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0007": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -20,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      -0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0008": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -30,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      -0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0009": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -40,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      -0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0010": {
+    "description": "Hangar ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -50,
+      0,
+      25
+    ],
+    "axis": [
+      0,
+      1,
+      -0.3
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0011": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -10,
+      30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0012": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -20,
+      30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0013": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -30,
+      30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0014": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -40,
+      30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0015": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -50,
+      30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0016": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -10,
+      -30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0017": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -20,
+      -30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0018": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -30,
+      -30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0019": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -40,
+      -30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0020": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -50,
+      -30,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0021": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      5,
+      0,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0022": {
+    "description": "Hangar vertical wall structure",
+    "type": "cylinder",
+    "center": [
+      -65,
+      0,
+      0
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0023": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      0,
+      30,
+      7
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0024": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      0,
+      30,
+      14
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0025": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      0,
+      -30,
+      7
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0026": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      0,
+      -30,
+      17
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0027": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      5,
+      0,
+      7
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0028": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      5,
+      0,
+      14
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0029": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      -65,
+      0,
+      7
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0030": {
+    "description": "Hangar horizontal wall structure",
+    "type": "cylinder",
+    "center": [
+      -65,
+      0,
+      14
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0031": {
+    "description": "Airplane left internal engine",
+    "type": "cylinder",
+    "center": [
+      -23,
+      8,
+      4.5
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 1.5,
+    "size": [],
+    "rotation": [],
+    "bounds": [
+      -1,
+      4
+    ]
+  },
+  "CYLINDER_0032": {
+    "description": "Airplane right internal engine",
+    "type": "cylinder",
+    "center": [
+      -23,
+      -8,
+      4.5
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 1.5,
+    "size": [],
+    "rotation": [],
+    "bounds": [
+      -1,
+      4
+    ]
+  },
+  "CYLINDER_0033": {
+    "description": "Airplane left external engine",
+    "type": "cylinder",
+    "center": [
+      -24,
+      15,
+      4.5
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 1.5,
+    "size": [],
+    "rotation": [],
+    "bounds": [
+      -1,
+      4
+    ]
+  },
+  "CYLINDER_0034": {
+    "description": "Airplane right external engine",
+    "type": "cylinder",
+    "center": [
+      -24,
+      -15,
+      4.5
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 1.5,
+    "size": [],
+    "rotation": [],
+    "bounds": [
+      -1,
+      4
+    ]
+  },
+  "ELLIPSOID_0001": {
+    "description": "Airplane main fuselage",
+    "type": "ellipsoid",
+    "center": [
+      -30,
+      0,
+      5
+    ],
+    "axis": [],
+    "radius": [],
+    "size": [
+      28,
+      4,
+      4
+    ],
+    "rotation": []
+  },
+  "ELLIPSOID_0002": {
+    "description": "Airplane main wings",
+    "type": "ellipsoid",
+    "center": [
+      -27,
+      0,
+      6
+    ],
+    "axis": [],
+    "radius": [],
+    "size": [
+      5,
+      25,
+      0.5
+    ],
+    "rotation": []
+  },
+  "ELLIPSOID_0003": {
+    "description": "Airplane tail",
+    "type": "ellipsoid",
+    "center": [
+      -52,
+      0,
+      11
+    ],
+    "axis": [],
+    "radius": [],
+    "size": [
+      2.5,
+      0.5,
+      8
+    ],
+    "rotation": []
+  },
+  "ELLIPSOID_0004": {
+    "description": "Airplane tail wing",
+    "type": "ellipsoid",
+    "center": [
+      -52,
+      0,
+      16
+    ],
+    "axis": [],
+    "radius": [],
+    "size": [
+      4,
+      8,
+      0.6
+    ],
+    "rotation": []
+  }
+}

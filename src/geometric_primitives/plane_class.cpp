@@ -32,6 +32,18 @@ plane_class::plane_class(double nx, double ny, double nz, double d_0){
 }
 
 
+plane_class::plane_class(double nx, double ny, double nz, double cx, double cy, double cz){
+
+  VectorXd n_init(3), c_init(3);
+  n_init << nx, ny, nz;
+  c_init << cx, cy, cz;
+  n = n_init;
+  n = n/n.norm();
+  d = n.dot(c_init);
+
+}
+
+
 double plane_class::compute_distance(VectorXd position, VectorXd direction){
 
   VectorXd x(3), v(3);

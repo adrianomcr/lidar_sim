@@ -9,8 +9,8 @@ using namespace Eigen;
 class ellipsoid_class{
   private:
 
-    double a,b,c;
-    VectorXd center;
+    double a,b,c,r012;
+    VectorXd center, Omega_center; //, Omega_diag;
     VectorXd r;
     MatrixXd Omega;
 

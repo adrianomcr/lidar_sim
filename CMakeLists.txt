@@ -123,6 +123,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Eigen_INCLUDE_DIRS}
   include
+  json/include
 )
 # include_directories(${Eigen_INCLUDE_DIRS})
 

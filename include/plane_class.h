@@ -18,6 +18,7 @@ class plane_class{
     // EKF_class(Eigen::VectorXd, double, double); //Construtor
     plane_class(VectorXd, double); //Construtor
     plane_class(double, double, double,    double); //Construtor
+    plane_class(double, double, double,    double, double, double); //Construtor
     ~plane_class(); //Destructor
 
 

@@ -1,7 +1,7 @@
 <launch>
 
 
-    <node pkg="lidar_sim" name="lidar" type="sim_lidar" output="screen">
+    <node pkg="lidar_sim" name="lidar" type="sim_lidar" output="screen" args="$(find lidar_sim)/config/world.json">
 	</node>
 
     <!-- <node pkg="lidar_sim" name="physics" type="sim_motion" output="screen"> -->

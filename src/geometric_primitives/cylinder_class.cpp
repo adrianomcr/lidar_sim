@@ -79,15 +79,50 @@ double cylinder_class::compute_distance(VectorXd position, VectorXd direction){
   double gamma, gamma_1, gamma_2;
   double A,B,C;
 
+
+  // //----------  ----------  ----------  ----------  ----------
+  // Matrix2d AA, AA_inv;
+  // Vector2d BB, best;
+  // Vector3d v1,v2,c1,c2;
+  // v1 = n;
+  // c1 = p;
+  // v2 = v;
+  // c2 = x;
+
+  // // AA << 1, -v1.dot(v2), -v1.dot(v2), 1;
+  // BB << -v1.dot(c1-c2), v2.dot(c1-c2);
+  // float aa = v1.dot(v2);
+  // float aaf = 1/(aa*aa-1);
+  // AA_inv << -aaf, -aa*aaf, -aa*aaf, -aaf;
+  // // best << AA.inverse()*(BB);
+  // best << AA_inv*BB;
+  
+  // float dist_min = (c1+best(0)*v1 - c2 - best(1)*v2).norm();
+  // if(dist_min>r){
+  //   return 1e6;
+  // }
+  // // return 1e6;
+  // //----------  ----------  ----------  ----------  ----------
+
+
   Eigen::Vector3d Z;
+  float vn = v.dot(n);
+
+  // Z = (x-p)-(n.dot(x-p))*n;
+  // A = 1.0-(v.dot(n))*(v.dot(n));
+  // B = 2.0*(v.dot(Z) - (v.dot(n))*(n.dot(Z)));
+  // C = Z.dot(Z)-r*r;
 
   Z = (x-p)-(n.dot(x-p))*n;
-  A = 1.0-(v.dot(n))*(v.dot(n));
-  B = 2.0*v.dot(Z) - 2.0*(v.dot(n))*(n.dot(Z));
+  A = 1.0-vn*vn;
+  B = 2.0*(v.dot(Z) - vn*(n.dot(Z)));
   C = Z.dot(Z)-r*r;
-  if(B*B-4*A*C >= 0){
-    gamma_1 = (-B+sqrt(B*B-4*A*C))/(2.0*A); if (gamma_1<=0) {gamma_1 = 1e6;}
-    gamma_2 = (-B-sqrt(B*B-4*A*C))/(2.0*A); if (gamma_2<=0) {gamma_2 = 1e6;}
+
+  double delta = B*B-4*A*C;
+  if(delta >= 0){
+    double sqrt_delta = sqrt(delta);
+    gamma_1 = (-B+sqrt_delta)/(2.0*A); if (gamma_1<=0) {gamma_1 = 1e6;}
+    gamma_2 = (-B-sqrt_delta)/(2.0*A); if (gamma_2<=0) {gamma_2 = 1e6;}
     gamma = gamma_1;
     if(gamma_2 < gamma_1){
       gamma = gamma_2;
