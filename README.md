@@ -26,6 +26,8 @@ roslaunch lidar_sim example.launch
 
 ## About the software
 
+Each object in the scene is composed of one basif geometric shape (geometric primitives). Its is also possible to use a constraint to "cut" of part of the geometric primitive.
+
 
 ### Available geometric primitives
 
@@ -34,6 +36,9 @@ roslaunch lidar_sim example.launch
 - Cylinder
 - Ellipsoid
 
+### Available constraints
+
+- Plane
 
 ## Contact
 
