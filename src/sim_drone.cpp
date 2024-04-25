@@ -232,6 +232,7 @@ int main(int argc, char **argv) {
       double t, radius, f;
       f = 0.05;
       t = secs-secs_init;
+      // t = t*4;
       radius = 3;
       pref << radius*cos(f*2*pi*t), radius*sin(f*2*pi*t), 2;
       vref << -(f*2*pi)*radius*sin(0.2*2*pi*t), (f*2*pi)*radius*cos(f*2*pi*t), 0;

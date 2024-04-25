@@ -16,6 +16,7 @@ sphere_class::sphere_class(VectorXd c_0, double r_0){
   c = c_init;
 
   r = r_0;
+  r2 = r*r;
 
 }
 
@@ -26,6 +27,14 @@ sphere_class::sphere_class(double cx, double cy, double cz, double r_0){
   c = c_init;
 
   r = r_0;
+  r2 = r*r;
+
+}
+
+
+void sphere_class::add_plane_constraint(double nx, double ny, double nz, double cx, double cy, double cz){
+
+  plane_constraints.push_back( new plane_constraint(nx,ny,nz,cx,cy,cz) );
 
 }
 
@@ -33,14 +42,16 @@ sphere_class::sphere_class(double cx, double cy, double cz, double r_0){
 double sphere_class::compute_distance(VectorXd position, VectorXd direction){
 
   VectorXd x(3), v(3);
-  x = position;
+  x = position - c;
   v = direction;
 
   double gamma, gamma_1, gamma_2;
   double B,C;
 
-  B = 2*v.dot(x-c);
-  C = (x-c).dot(x-c)-r*r;
+  // B = 2*v.dot(x-c);
+  // C = (x-c).dot(x-c)-r*r;
+  B = 2*v.dot(x);
+  C = x.dot(x)-r2;
   
   double delta = B*B-4*C;
   if(delta >= 0){

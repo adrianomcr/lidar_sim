@@ -66,42 +66,21 @@ cylinder_class::cylinder_class(double nx, double ny, double nz, double px, doubl
 double cylinder_class::compute_distance(VectorXd position, VectorXd direction){
 
   VectorXd x(3), v(3);
-  x = position;
+  // x = position;
+  x = position-p;
   v = direction;
 
   double gamma, gamma_1, gamma_2;
   double A,B,C;
 
-
-  // //----------  ----------  ----------  ----------  ----------
-  // Matrix2d AA, AA_inv;
-  // Vector2d BB, best;
-  // Vector3d v1,v2,c1,c2;
-  // v1 = n;
-  // c1 = p;
-  // v2 = v;
-  // c2 = x;
-
-  // // AA << 1, -v1.dot(v2), -v1.dot(v2), 1;
-  // BB << -v1.dot(c1-c2), v2.dot(c1-c2);
-  // float aa = v1.dot(v2);
-  // float aaf = 1/(aa*aa-1);
-  // AA_inv << -aaf, -aa*aaf, -aa*aaf, -aaf;
-  // // best << AA.inverse()*(BB);
-  // best << AA_inv*BB;
-  
-  // float dist_min = (c1+best(0)*v1 - c2 - best(1)*v2).norm();
-  // if(dist_min>r){
-  //   return 1e6;
-  // }
-  // // return 1e6;
-  // //----------  ----------  ----------  ----------  ----------
-
-
   Eigen::Vector3d Z;
   float vn = v.dot(n);
 
-  Z = (x-p)-(n.dot(x-p))*n;
+  // Z = (x-p)-(n.dot(x-p))*n;
+  // A = 1.0-vn*vn;
+  // B = 2.0*(v.dot(Z) - vn*(n.dot(Z)));
+  // C = Z.dot(Z)-r*r;
+  Z = x-(n.dot(x))*n;
   A = 1.0-vn*vn;
   B = 2.0*(v.dot(Z) - vn*(n.dot(Z)));
   C = Z.dot(Z)-r*r;
@@ -120,13 +99,17 @@ double cylinder_class::compute_distance(VectorXd position, VectorXd direction){
     gamma = 1e6;
   }
 
-  //cylinder_class::nothing(123);
-  // (this->*limit_function)();
 
-  if(n.dot(x+gamma*v - p)>ub){
+  // if(n.dot(x+gamma*v - p)>ub){
+  //   gamma = 1e6;
+  // }
+  // if(n.dot(x+gamma*v - p)<lb){
+  //   gamma = 1e6;
+  // }
+  if(n.dot(x+gamma*v)>ub){
     gamma = 1e6;
   }
-  if(n.dot(x+gamma*v - p)<lb){
+  if(n.dot(x+gamma*v)<lb){
     gamma = 1e6;
   }
 
@@ -142,8 +125,6 @@ void cylinder_class::nothing(){
 
 void cylinder_class::check_height(){
   // cout << "aaa" << endl;
-
-
   // gamma = 1e6;
 }
 

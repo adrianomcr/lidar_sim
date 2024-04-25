@@ -86,7 +86,7 @@ class json_generator:
         }
         self.data["CYLINDER_"+str(self.cylinder_count).zfill(4)] = d
 
-    def add_ellipsoid(self, center, size, description=""):
+    def add_ellipsoid(self, center, size, angles=[0,0,0], plane_constraints=[],description=""):
         self.ellipse_count = self.ellipse_count+1
         d = {
         'description': description,
@@ -95,8 +95,11 @@ class json_generator:
         'axis': [],
         'radius': [],
         'size': size,
-        'rotation': []
+        'rotation': [],
+        'angles': angles
         }
+        # d['plane_constraints'] = [[0,1,0,0,0,0],[0,0,1,0,0,0]]
+        d['plane_constraints'] = plane_constraints
         self.data["ELLIPSOID_"+str(self.ellipse_count).zfill(4)] = d
 
 
@@ -150,6 +153,14 @@ if __name__ == "__main__":
     params.add_cylinder(center=[-65,0,7], axis=[0,1,0], radius=0.4, description='Hangar horizontal wall structure')
     params.add_cylinder(center=[-65,0,14], axis=[0,1,0], radius=0.4, description='Hangar horizontal wall structure')
 
+    params.add_cylinder(center=[0,0,19.25], axis=[1,0,0], radius=0.4, description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-10,0,19.25], axis=[0,1,0], radius=0.4, description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-20,0,19.25], axis=[0,1,0], radius=0.4, description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-30,0,19.25], axis=[0,1,0], radius=0.4, description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-40,0,19.25], axis=[0,1,0], radius=0.4, description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-50,0,19.25], axis=[0,1,0], radius=0.4, description='Hangar botton ceiling structure')
+    
+
     # Spheres
     params.add_sphere(center=[-5,10,0], radius=2, description='A test sphere')
 
@@ -157,15 +168,18 @@ if __name__ == "__main__":
 
 
     # Airplane cylinders
-    params.add_cylinder(center=[-23,8,4.5], axis=[1,0,0], radius=1.5, bounds=[-1,4], description='Airplane left internal engine')
-    params.add_cylinder(center=[-23,-8,4.5], axis=[1,0,0], radius=1.5, bounds=[-1,4], description='Airplane right internal engine')
-    params.add_cylinder(center=[-24,15,4.5], axis=[1,0,0], radius=1.5, bounds=[-1,4], description='Airplane left external engine')
-    params.add_cylinder(center=[-24,-15,4.5], axis=[1,0,0], radius=1.5, bounds=[-1,4], description='Airplane right external engine')
-    # Airplane ellipsoids
+    params.add_ellipsoid(center=[-20,8,4.5], size=[5.5,1.6,1,6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane left internal engine')
+    params.add_ellipsoid(center=[-20,-8,4.5], size=[5.5,1.6,1.6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane right internal engine')
+    params.add_ellipsoid(center=[-23,15,4.5], size=[5.5,1.6,1,6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane left external engine')
+    params.add_ellipsoid(center=[-23,-15,4.5], size=[5.5,1.6,1.6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane right external engine')
     params.add_ellipsoid(center=[-30,0,5], size=[28,4,4], description='Airplane main fuselage')
-    params.add_ellipsoid(center=[-27,0,6], size=[5,25,0.5], description='Airplane main wings')
-    params.add_ellipsoid(center=[-52,0,11], size=[2.5,0.5,8], description='Airplane tail')
-    params.add_ellipsoid(center=[-52,0,16], size=[4,8,0.6], description='Airplane tail wing')
+    params.add_ellipsoid(center=[-25,0,6], size=[5,25,0.5], angles=[0,-0.1,0.3], plane_constraints=[[0,1,0,0,0,0],[0,-1,0,0,22,0]], description='Airplane left main wing')
+    params.add_ellipsoid(center=[-25,0,6], size=[5,25,0.5], angles=[0,-0.1,-0.3], plane_constraints=[[0,-1,0,0,0,0]], description='Airplane right main wing')
+    params.add_ellipsoid(center=[-52,0,11], size=[2.5,0.5,8], angles=[0,-0.4,0], plane_constraints=[[0,0,-1,0,0,6.5]], description='Airplane tail')
+    params.add_ellipsoid(center=[-56,0,16], size=[4,8,0.6], angles=[0,-0.1,0], description='Airplane tail wing')
+
+
+
 
 
 

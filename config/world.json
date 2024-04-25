@@ -658,6 +658,114 @@
     "rotation": [],
     "bounds": []
   },
+  "CYLINDER_0031": {
+    "description": "Hangar botton ceiling structure",
+    "type": "cylinder",
+    "center": [
+      0,
+      0,
+      19.25
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0032": {
+    "description": "Hangar botton ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -10,
+      0,
+      19.25
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0033": {
+    "description": "Hangar botton ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -20,
+      0,
+      19.25
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0034": {
+    "description": "Hangar botton ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -30,
+      0,
+      19.25
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0035": {
+    "description": "Hangar botton ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -40,
+      0,
+      19.25
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
+  "CYLINDER_0036": {
+    "description": "Hangar botton ceiling structure",
+    "type": "cylinder",
+    "center": [
+      -50,
+      0,
+      19.25
+    ],
+    "axis": [
+      0,
+      1,
+      0
+    ],
+    "radius": 0.4,
+    "size": [],
+    "rotation": [],
+    "bounds": []
+  },
   "SPHERE_0001": {
     "description": "A test sphere",
     "type": "sphere",
@@ -671,91 +779,137 @@
     "size": [],
     "rotation": []
   },
-  "CYLINDER_0031": {
+  "ELLIPSOID_0001": {
     "description": "Airplane left internal engine",
-    "type": "cylinder",
+    "type": "ellipsoid",
     "center": [
-      -23,
+      -20,
       8,
       4.5
     ],
-    "axis": [
+    "axis": [],
+    "radius": [],
+    "size": [
+      5.5,
+      1.6,
       1,
+      6
+    ],
+    "rotation": [],
+    "angles": [
+      0,
       0,
       0
     ],
-    "radius": 1.5,
-    "size": [],
-    "rotation": [],
-    "bounds": [
-      -1,
-      4
+    "plane_constraints": [
+      [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     ]
   },
-  "CYLINDER_0032": {
+  "ELLIPSOID_0002": {
     "description": "Airplane right internal engine",
-    "type": "cylinder",
+    "type": "ellipsoid",
     "center": [
-      -23,
+      -20,
       -8,
       4.5
     ],
-    "axis": [
-      1,
+    "axis": [],
+    "radius": [],
+    "size": [
+      5.5,
+      1.6,
+      1.6
+    ],
+    "rotation": [],
+    "angles": [
+      0,
       0,
       0
     ],
-    "radius": 1.5,
-    "size": [],
-    "rotation": [],
-    "bounds": [
-      -1,
-      4
+    "plane_constraints": [
+      [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     ]
   },
-  "CYLINDER_0033": {
+  "ELLIPSOID_0003": {
     "description": "Airplane left external engine",
-    "type": "cylinder",
+    "type": "ellipsoid",
     "center": [
-      -24,
+      -23,
       15,
       4.5
     ],
-    "axis": [
+    "axis": [],
+    "radius": [],
+    "size": [
+      5.5,
+      1.6,
       1,
+      6
+    ],
+    "rotation": [],
+    "angles": [
+      0,
       0,
       0
     ],
-    "radius": 1.5,
-    "size": [],
-    "rotation": [],
-    "bounds": [
-      -1,
-      4
+    "plane_constraints": [
+      [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     ]
   },
-  "CYLINDER_0034": {
+  "ELLIPSOID_0004": {
     "description": "Airplane right external engine",
-    "type": "cylinder",
+    "type": "ellipsoid",
     "center": [
-      -24,
+      -23,
       -15,
       4.5
     ],
-    "axis": [
-      1,
+    "axis": [],
+    "radius": [],
+    "size": [
+      5.5,
+      1.6,
+      1.6
+    ],
+    "rotation": [],
+    "angles": [
+      0,
       0,
       0
     ],
-    "radius": 1.5,
-    "size": [],
-    "rotation": [],
-    "bounds": [
-      -1,
-      4
+    "plane_constraints": [
+      [
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
     ]
   },
-  "ELLIPSOID_0001": {
+  "ELLIPSOID_0005": {
     "description": "Airplane main fuselage",
     "type": "ellipsoid",
     "center": [
@@ -770,13 +924,19 @@
       4,
       4
     ],
-    "rotation": []
+    "rotation": [],
+    "angles": [
+      0,
+      0,
+      0
+    ],
+    "plane_constraints": []
   },
-  "ELLIPSOID_0002": {
-    "description": "Airplane main wings",
+  "ELLIPSOID_0006": {
+    "description": "Airplane left main wing",
     "type": "ellipsoid",
     "center": [
-      -27,
+      -25,
       0,
       6
     ],
@@ -787,9 +947,64 @@
       25,
       0.5
     ],
-    "rotation": []
+    "rotation": [],
+    "angles": [
+      0,
+      -0.1,
+      0.3
+    ],
+    "plane_constraints": [
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        -1,
+        0,
+        0,
+        22,
+        0
+      ]
+    ]
   },
-  "ELLIPSOID_0003": {
+  "ELLIPSOID_0007": {
+    "description": "Airplane right main wing",
+    "type": "ellipsoid",
+    "center": [
+      -25,
+      0,
+      6
+    ],
+    "axis": [],
+    "radius": [],
+    "size": [
+      5,
+      25,
+      0.5
+    ],
+    "rotation": [],
+    "angles": [
+      0,
+      -0.1,
+      -0.3
+    ],
+    "plane_constraints": [
+      [
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "ELLIPSOID_0008": {
     "description": "Airplane tail",
     "type": "ellipsoid",
     "center": [
@@ -804,13 +1019,28 @@
       0.5,
       8
     ],
-    "rotation": []
+    "rotation": [],
+    "angles": [
+      0,
+      -0.4,
+      0
+    ],
+    "plane_constraints": [
+      [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        6.5
+      ]
+    ]
   },
-  "ELLIPSOID_0004": {
+  "ELLIPSOID_0009": {
     "description": "Airplane tail wing",
     "type": "ellipsoid",
     "center": [
-      -52,
+      -56,
       0,
       16
     ],
@@ -821,6 +1051,12 @@
       8,
       0.6
     ],
-    "rotation": []
+    "rotation": [],
+    "angles": [
+      0,
+      -0.1,
+      0
+    ],
+    "plane_constraints": []
   }
 }

@@ -139,6 +139,8 @@ add_library(plane_class
 add_library(sphere_class
   src/geometric_primitives/sphere_class.cpp
   include/sphere_class.h
+  src/constraints/plane_constraint.cpp
+  include/plane_constraint.h
 )
 add_library(cylinder_class
   src/geometric_primitives/cylinder_class.cpp
@@ -151,6 +153,8 @@ add_library(surface_class
 add_library(ellipsoid_class
   src/geometric_primitives/ellipsoid_class.cpp
   include/ellipsoid_class.h
+  src/constraints/plane_constraint.cpp
+  include/plane_constraint.h
 )
 
 ## Add cmake target dependencies of the library
@@ -179,7 +183,9 @@ add_executable(sim_lidar src/sim_lidar.cpp
                             src/geometric_primitives/surface_class.cpp
                             include/surface_class.h
                             src/geometric_primitives/ellipsoid_class.cpp
-                            include/ellipsoid_class.h)
+                            include/ellipsoid_class.h
+                            src/constraints/plane_constraint.cpp
+                            include/plane_constraint.h)
 target_link_libraries(sim_lidar ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 
 add_executable(investigate src/investigate.cpp)

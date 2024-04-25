@@ -46,13 +46,14 @@ using json = nlohmann::json;
 // #include <pcl_conversions/pcl_conversions.h>
 
 #define PI 3.1415926535
-#define N_A 360*4
+#define N_A 360*5
 #define N_V 16
 
 // #define THREAD_1
 // #define THREAD_2
 // #define THREAD_4
-#define THREAD_8
+// #define THREAD_8
+#define THREAD_16
 
 
 
@@ -226,7 +227,7 @@ int load_world_file(const std::string& filename)
   json jsonData;
   file >> jsonData;
 
-  Eigen::Vector3d axis, center, size;
+  Eigen::Vector3d axis, center, size, angles;
   float radius, lb, ub;
 
   // Iterate over the fields of the JSON object
@@ -267,8 +268,19 @@ int load_world_file(const std::string& filename)
     else if(type=="ellipsoid"){
       size << value["size"][0], value["size"][1], value["size"][2];
       center << value["center"][0], value["center"][1], value["center"][2];
+      angles << value["angles"][0], value["angles"][1], value["angles"][2];
       std::cout << "Adding ellipsoid: " << description << std::endl;
-      ellipsoids.push_back( new ellipsoid_class(size(0),size(1),size(2), center(0),center(1),center(2)));
+      ellipsoids.push_back( new ellipsoid_class(size(0),size(1),size(2), center(0),center(1),center(2), angles(1), angles(2)));
+      std::cout << "constraints: " << value["plane_constraints"] << std::endl;
+      for (auto& constraint : value["plane_constraints"].items()){
+        const json& cv = constraint.value();
+        std::cout << "constraint: " << cv << std::endl;
+        std::cout << "constraint id: " << cv[1] << std::endl;
+        ellipsoids[ellipsoids.size() - 1]->add_plane_constraint(cv[0],cv[1],cv[2],cv[3],cv[4],cv[5]);
+      }
+      
+
+      
     }
     else{
       std::cout << "\33[91mUnrecognized geometric primitive type: " << type << "\33[0m" << std::endl;
@@ -386,6 +398,41 @@ int main(int argc, char **argv) {
     th5.join();
     th6.join();
     th7.join();
+#endif
+
+#ifdef THREAD_16
+    std::thread th0(computation_task, 0,1, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th1(computation_task, 1,2, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th2(computation_task, 2,3, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th3(computation_task, 3,4, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th4(computation_task, 4,5, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th5(computation_task, 5,6, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th6(computation_task, 6,7, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th7(computation_task, 7,8, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th8(computation_task, 8,9, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th9(computation_task, 9,10, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th10(computation_task, 10,11, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th11(computation_task, 11,12, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th12(computation_task, 12,13, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th13(computation_task, 13,14, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th14(computation_task, 14,15, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    std::thread th15(computation_task, 15,16, ring_arr, dist_arr, azimuth_arr, time_arr, points_arr, flag_arr);
+    th0.join();
+    th1.join();
+    th2.join();
+    th3.join();
+    th4.join();
+    th5.join();
+    th6.join();
+    th7.join();
+    th8.join();
+    th9.join();
+    th10.join();
+    th11.join();
+    th12.join();
+    th13.join();
+    th14.join();
+    th15.join();
 #endif
 
 

@@ -44,15 +44,17 @@ plane_class::plane_class(double nx, double ny, double nz, double cx, double cy, 
 double plane_class::compute_distance(VectorXd position, VectorXd direction){
 
   VectorXd x(3), v(3);
+  float gamma;
+
   x = position;
   v = direction;
-  float gamma;
 
   gamma = (d - x.dot(n))/v.dot(n);
 
   if (gamma<=0){
     gamma = 1e6;
   }
+
   return gamma;
 
 }
