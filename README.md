@@ -8,7 +8,9 @@ Simulation of a LiDAR based on geometric primitives. Below an example for the Ve
 ```bash
 mkdir ~/simulation_ws/src
 cd ~/simulation_ws/src
-git clone git@github.com:adrianomcr/lidar_sim.git
+git clone git@github.com:adrianomcr/lidar_sim.git --recursive
+cd lidar_sim
+git submodule update --init
 cd ~/simulation_ws
 catkin build  --cmake-args -DCMAKE_BUILD_TYPE=Release
 source devel/setup.bash
