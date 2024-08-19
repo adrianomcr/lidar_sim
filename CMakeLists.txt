@@ -194,6 +194,8 @@ target_link_libraries(investigate ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 add_executable(sim_drone src/sim_drone.cpp)
 target_link_libraries(sim_drone ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 
+set(CMAKE_BUILD_TYPE Release)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
