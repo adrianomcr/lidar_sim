@@ -4,7 +4,33 @@ Simulation of a LiDAR based on geometric primitives. Below an example for the Ve
 
 ![image](.images/example.png)
 
-## Set it up
+## Docker setup
+Clone the repo and the submodules
+```bash
+mkdir ~/simulation_ws/src
+cd ~/simulation_ws/src
+git clone git@github.com:adrianomcr/lidar_sim.git
+cd lidar_sim
+git submodule update --depth 1 --init --recursive 
+```
+
+Build the image
+```bash
+docker compose -f docker-compose.yaml build
+```
+
+Give docker access to the X server
+```bash
+xhost +local:docker
+```
+
+Run the docker container
+```bash
+docker compose -f docker-compose.yaml run --rm sim4cd bash
+```
+
+
+## Native setup
 ```bash
 mkdir ~/simulation_ws/src
 cd ~/simulation_ws/src
@@ -16,13 +42,9 @@ catkin build  --cmake-args -DCMAKE_BUILD_TYPE=Release
 source devel/setup.bash
 ```
 
-OBS: The `Release` argument is important to make the code run (way) faster.
-
 
 ## Use it
 ```bash
-cd ~/simulation_ws
-source devel/setup.bash
 roslaunch lidar_sim example.launch
 ```
 
