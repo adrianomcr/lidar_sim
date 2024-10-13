@@ -36,3 +36,6 @@ CMD ["/bin/bash", "-c", "source /opt/ros/noetic/setup.bash && source ~/.bashrc &
 
 # Needed for running source
 SHELL ["/bin/bash", "-c"]
+
+# Reset DEBIAN_FRONTEND (optional but good practice)
+ENV DEBIAN_FRONTEND=dialog
