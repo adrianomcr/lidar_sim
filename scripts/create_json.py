@@ -167,13 +167,13 @@ if __name__ == "__main__":
 
 
 
-    # Airplane cylinders
+    # Airplane shapes
     params.add_ellipsoid(center=[-20,8,4.5], size=[5.5,1.6,1,6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane left internal engine')
     params.add_ellipsoid(center=[-20,-8,4.5], size=[5.5,1.6,1.6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane right internal engine')
     params.add_ellipsoid(center=[-23,15,4.5], size=[5.5,1.6,1,6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane left external engine')
     params.add_ellipsoid(center=[-23,-15,4.5], size=[5.5,1.6,1.6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane right external engine')
     params.add_ellipsoid(center=[-30,0,5], size=[28,4,4], description='Airplane main fuselage')
-    params.add_ellipsoid(center=[-25,0,6], size=[5,25,0.5], angles=[0,-0.1,0.3], plane_constraints=[[0,1,0,0,0,0],[0,-1,0,0,22,0]], description='Airplane left main wing')
+    params.add_ellipsoid(center=[-25,0,6], size=[5,25,0.5], angles=[0,-0.1,0.3], plane_constraints=[[0,1,0,0,0,0]], description='Airplane left main wing')
     params.add_ellipsoid(center=[-25,0,6], size=[5,25,0.5], angles=[0,-0.1,-0.3], plane_constraints=[[0,-1,0,0,0,0]], description='Airplane right main wing')
     params.add_ellipsoid(center=[-52,0,11], size=[2.5,0.5,8], angles=[0,-0.4,0], plane_constraints=[[0,0,-1,0,0,6.5]], description='Airplane tail')
     params.add_ellipsoid(center=[-56,0,16], size=[4,8,0.6], angles=[0,-0.1,0], description='Airplane tail wing')
