@@ -14,17 +14,14 @@ class plane_constraint{
     double d;
     VectorXd n;
 
-
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    // EKF_class(Eigen::VectorXd, double, double); //Construtor
     plane_constraint(VectorXd, double); //Construtor
     plane_constraint(double, double, double,    double); //Construtor
     plane_constraint(double, double, double,    double, double, double); //Construtor
     ~plane_constraint(); //Destructor
 
-
     double check_validity(VectorXd);   
 };
 
-#endif
+#endif // PLANE_CONSTRAINT_H_

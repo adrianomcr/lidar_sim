@@ -2,7 +2,9 @@
 #include <eigen3/Eigen/Geometry>
 #include <iostream>
 #include <math.h>
-// #include <mutex>
+#include <vector>
+
+#include <plane_constraint.h>
 
 using namespace Eigen;
 
@@ -11,29 +13,17 @@ class cylinder_class{
 
     double r;
     VectorXd n, p;
-
     double lb, ub;
 
-    void (cylinder_class::*limit_function)();
-
+    std::vector<plane_constraint *> plane_constraints;
 
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    // EKF_class(Eigen::VectorXd, double, double); //Construtor
     cylinder_class(VectorXd, VectorXd, double); //Construtor
     cylinder_class(double, double, double,    double, double, double,    double); //Construtor
     cylinder_class(double, double, double,    double, double, double,    double,    double, double); //Construtor
     ~cylinder_class(); //Destructor
 
-
+    void add_plane_constraint(double, double, double, double, double, double);
     double compute_distance(VectorXd, VectorXd);
-
-    void nothing();
-
-    void check_height();
-
-
-    // void set_cylinder_limits(double, double);
-    
-
 };
