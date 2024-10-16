@@ -25,7 +25,6 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
 
   Omega_center = Omega*center;
 
-
   r012 = r(0)*r(0)*r(1)*r(1)*r(2)*r(2);
 
   double pitch = 0;
@@ -40,7 +39,6 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
   H_w_e = H_w_e_init;
   R_w_e = H_w_e_init.block(0,0,3,3);
   p_w_e = H_w_e_init.block(0,3,3,1);
-
 }
 
 
@@ -62,9 +60,7 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
 
   Omega_center = Omega*center;
 
-
   r012 = r(0)*r(0)*r(1)*r(1)*r(2)*r(2);
-
 
   H_e_w_init << cos(pitch)*cos(yaw), -sin(yaw), cos(yaw)*sin(pitch), cx,
                 cos(pitch)*sin(yaw), cos(yaw) , sin(pitch)*sin(yaw), cy,
@@ -76,9 +72,7 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
   H_w_e = H_w_e_init;
   R_w_e = H_w_e_init.block(0,0,3,3);
   p_w_e = H_w_e_init.block(0,3,3,1);
-
 }
-
 
 
 void ellipsoid_class::add_plane_constraint(double nx, double ny, double nz, double cx, double cy, double cz){
@@ -94,7 +88,8 @@ double ellipsoid_class::compute_distance(VectorXd position, VectorXd direction){
   x = R_w_e*position + p_w_e;
   v = R_w_e*direction;  
 
-  double gamma, gamma_1, gamma_2;
+  double gamma_1, gamma_2;
+  double gamma_tmp;
   double A, B, C;
 
   Vector3d Omega_v;
@@ -108,31 +103,49 @@ double ellipsoid_class::compute_distance(VectorXd position, VectorXd direction){
     double sqrt_delta = sqrt(delta);
     gamma_1 = (-B+sqrt_delta)/(2.0*A); if (gamma_1<=0) {gamma_1 = 1e6;}
     gamma_2 = (-B-sqrt_delta)/(2.0*A); if (gamma_2<=0) {gamma_2 = 1e6;}
-    gamma = gamma_1;
     if(gamma_2 < gamma_1){
-      gamma = gamma_2;
+      gamma_tmp = gamma_1;
+      gamma_1 = gamma_2;
+      gamma_2 = gamma_tmp;
     }
-
   }
   else{
-    gamma = 1e6;
+    return 1e6;
   }
 
 
-  if(gamma<1e6){
-    Vector3d q;
-    q = x+v*gamma;
+  // Plane constraints
+  Vector3d q;
+  if(gamma_1 < 1e6){
+    q = x + v*gamma_1;
     for (int k=0; k<plane_constraints.size(); k++){
       if(!plane_constraints[k]->check_validity(q)){
-        gamma = 1e6;
+        gamma_1 = 1e6;
         break;
       }
     }
+    if(gamma_1 < 1e6){
+      return gamma_1;
+    }
+    else{
+      if(gamma_2 < 1e6){
+        q = x + v*gamma_2;
+        for (int k=0; k<plane_constraints.size(); k++){
+          if(!plane_constraints[k]->check_validity(q)){
+            return 1e6;
+          }
+        }
+        return gamma_2;
+      }
+      else{
+        return 1e6;
+      }
+    }
+  }
+  else{
+    return 1e6;
   }
 
-  return gamma;
-
+  std::cerr << "Caught exception: " << std::endl;
+  return 1e6;
 }
-
-
-

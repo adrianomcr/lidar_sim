@@ -244,12 +244,26 @@ int load_world_file(const std::string& filename)
       center << value["center"][0], value["center"][1], value["center"][2];
       std::cout << "Adding plane: " << description << std::endl;
       planes.push_back( new plane_class(axis(0),axis(1),axis(2), center(0),center(1),center(2)));
+      std::cout << "constraints: " << value["plane_constraints"] << std::endl;
+      for (auto& constraint : value["plane_constraints"].items()){
+        const json& cv = constraint.value();
+        std::cout << "constraint: " << cv << std::endl;
+        std::cout << "constraint id: " << cv[1] << std::endl;
+        planes[planes.size() - 1]->add_plane_constraint(cv[0],cv[1],cv[2],cv[3],cv[4],cv[5]);
+      }
     }
     else if(type=="sphere"){
       center << value["center"][0], value["center"][1], value["center"][2];
       radius = value["radius"];
       std::cout << "Adding sphere: " << description << std::endl;
       spheres.push_back( new sphere_class(center(0),center(1),center(2), radius));
+      std::cout << "constraints: " << value["plane_constraints"] << std::endl;
+      for (auto& constraint : value["plane_constraints"].items()){
+        const json& cv = constraint.value();
+        std::cout << "constraint: " << cv << std::endl;
+        std::cout << "constraint id: " << cv[1] << std::endl;
+        spheres[spheres.size() - 1]->add_plane_constraint(cv[0],cv[1],cv[2],cv[3],cv[4],cv[5]);
+      } 
     }
     else if(type=="cylinder"){
       axis << value["axis"][0], value["axis"][1], value["axis"][2];
@@ -264,6 +278,12 @@ int load_world_file(const std::string& filename)
         ub = value["bounds"][1];
         cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius, lb, ub));
       }
+      for (auto& constraint : value["plane_constraints"].items()){
+        const json& cv = constraint.value();
+        std::cout << "constraint: " << cv << std::endl;
+        std::cout << "constraint id: " << cv[1] << std::endl;
+        cylinders[cylinders.size() - 1]->add_plane_constraint(cv[0],cv[1],cv[2],cv[3],cv[4],cv[5]);
+      }
     }
     else if(type=="ellipsoid"){
       size << value["size"][0], value["size"][1], value["size"][2];
@@ -277,10 +297,7 @@ int load_world_file(const std::string& filename)
         std::cout << "constraint: " << cv << std::endl;
         std::cout << "constraint id: " << cv[1] << std::endl;
         ellipsoids[ellipsoids.size() - 1]->add_plane_constraint(cv[0],cv[1],cv[2],cv[3],cv[4],cv[5]);
-      }
-      
-
-      
+      } 
     }
     else{
       std::cout << "\33[91mUnrecognized geometric primitive type: " << type << "\33[0m" << std::endl;

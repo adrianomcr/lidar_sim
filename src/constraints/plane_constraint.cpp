@@ -12,10 +12,9 @@ plane_constraint::plane_constraint(VectorXd n_0, double d_0){
   n_init = n_0;
   n = n_init;
   n = n/n.norm();
-
   d = d_0;
-
 }
+
 
 plane_constraint::plane_constraint(double nx, double ny, double nz, double d_0){
 
@@ -23,9 +22,7 @@ plane_constraint::plane_constraint(double nx, double ny, double nz, double d_0){
   n_init << nx, ny, nz;
   n = n_init;
   n = n/n.norm();
-
   d = d_0;
-
 }
 
 
@@ -37,7 +34,6 @@ plane_constraint::plane_constraint(double nx, double ny, double nz, double cx, d
   n = n_init;
   n = n/n.norm();
   d = n.dot(c_init);
-
 }
 
 
@@ -53,31 +49,4 @@ double plane_constraint::check_validity(VectorXd position){
   }
 
   return valid;
-
 }
-
-
-
-// double plane_constraint::compute_distance(VectorXd position, VectorXd direction){
-
-//   VectorXd x(3), v(3);
-//   float gamma;
-//   // for (int k=0; k<2 ; k++){
-
-    
-//     x = position;
-//     v = direction;
-//     // float gamma;
-
-//     gamma = (d - x.dot(n))/v.dot(n);
-
-//     if (gamma<=0){
-//       gamma = 1e6;
-//     }
-
-//   // }
-//   return gamma;
-
-// }
-
-

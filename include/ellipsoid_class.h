@@ -6,7 +6,6 @@
 
 #include <plane_constraint.h>
 
-
 using namespace Eigen;
 
 class ellipsoid_class{

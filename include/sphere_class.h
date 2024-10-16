@@ -22,9 +22,6 @@ class sphere_class{
     sphere_class(double, double, double,    double); //Construtor
     ~sphere_class(); //Destructor
 
-
-
     void add_plane_constraint(double, double, double, double, double, double);
     double compute_distance(VectorXd, VectorXd);
-    
 };

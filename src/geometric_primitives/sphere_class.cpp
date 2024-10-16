@@ -6,9 +6,6 @@ using namespace std;
 using namespace Eigen;
 
 
-
-// constructor
-
 sphere_class::sphere_class(VectorXd c_0, double r_0){
 
   VectorXd c_init(3);
@@ -17,7 +14,6 @@ sphere_class::sphere_class(VectorXd c_0, double r_0){
 
   r = r_0;
   r2 = r*r;
-
 }
 
 sphere_class::sphere_class(double cx, double cy, double cz, double r_0){
@@ -28,7 +24,6 @@ sphere_class::sphere_class(double cx, double cy, double cz, double r_0){
 
   r = r_0;
   r2 = r*r;
-
 }
 
 
@@ -45,11 +40,10 @@ double sphere_class::compute_distance(VectorXd position, VectorXd direction){
   x = position - c;
   v = direction;
 
-  double gamma, gamma_1, gamma_2;
+  double gamma_1, gamma_2;
+  double gamma_tmp;
   double B,C;
 
-  // B = 2*v.dot(x-c);
-  // C = (x-c).dot(x-c)-r*r;
   B = 2*v.dot(x);
   C = x.dot(x)-r2;
   
@@ -58,18 +52,48 @@ double sphere_class::compute_distance(VectorXd position, VectorXd direction){
     double sqrt_delta = sqrt(delta);
     gamma_1 = (-B+sqrt_delta)/2.0; if (gamma_1<=0) {gamma_1 = 1e6;}
     gamma_2 = (-B-sqrt_delta)/2.0; if (gamma_2<=0) {gamma_2 = 1e6;}
-    gamma = gamma_1;
     if(gamma_2 < gamma_1){
-      gamma = gamma_2;
+      gamma_tmp = gamma_1;
+      gamma_1 = gamma_2;
+      gamma_2 = gamma_tmp;
     }
   }
   else{
-    gamma = 1e6;
+    return 1e6;
   }
   
-  return gamma;
+  // Plane constraints
+  Vector3d q;
+  if(gamma_1 < 1e6){
+    q = x + v*gamma_1;
+    for (int k=0; k<plane_constraints.size(); k++){
+      if(!plane_constraints[k]->check_validity(q)){
+        gamma_1 = 1e6;
+        break;
+      }
+    }
+    if(gamma_1 < 1e6){
+      return gamma_1;
+    }
+    else{
+      if(gamma_2 < 1e6){
+        q = x + v*gamma_2;
+        for (int k=0; k<plane_constraints.size(); k++){
+          if(!plane_constraints[k]->check_validity(q)){
+            return 1e6;
+          }
+        }
+        return gamma_2;
+      }
+      else{
+        return 1e6;
+      }
+    }
+  }
+  else{
+    return 1e6;
+  }
 
+  std::cerr << "Caught exception: " << std::endl;
+  return 1e6;
 }
-
-
-
