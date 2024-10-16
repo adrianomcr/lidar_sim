@@ -14,7 +14,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "PLANE_0002": {
     "description": "Hangar wall",
@@ -31,7 +32,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "PLANE_0003": {
     "description": "Hangar wall",
@@ -48,7 +50,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "PLANE_0004": {
     "description": "Hangar wall",
@@ -65,7 +68,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "PLANE_0005": {
     "description": "Hangar wall",
@@ -82,7 +86,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "PLANE_0006": {
     "description": "Hangar ceiling",
@@ -99,7 +104,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "PLANE_0007": {
     "description": "Hangar ceiling",
@@ -116,7 +122,8 @@
     ],
     "radius": [],
     "size": [],
-    "rotation": []
+    "rotation": [],
+    "plane_constraints": []
   },
   "CYLINDER_0001": {
     "description": "Hangar ceiling structure",
@@ -134,7 +141,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0002": {
     "description": "Hangar ceiling structure",
@@ -152,7 +160,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0003": {
     "description": "Hangar ceiling structure",
@@ -170,7 +179,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0004": {
     "description": "Hangar ceiling structure",
@@ -188,7 +198,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0005": {
     "description": "Hangar ceiling structure",
@@ -206,7 +217,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0006": {
     "description": "Hangar ceiling structure",
@@ -224,7 +236,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0007": {
     "description": "Hangar ceiling structure",
@@ -242,7 +255,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0008": {
     "description": "Hangar ceiling structure",
@@ -260,7 +274,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0009": {
     "description": "Hangar ceiling structure",
@@ -278,7 +293,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0010": {
     "description": "Hangar ceiling structure",
@@ -296,7 +312,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0011": {
     "description": "Hangar vertical wall structure",
@@ -314,7 +331,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0012": {
     "description": "Hangar vertical wall structure",
@@ -332,7 +350,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0013": {
     "description": "Hangar vertical wall structure",
@@ -350,7 +369,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0014": {
     "description": "Hangar vertical wall structure",
@@ -368,7 +388,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0015": {
     "description": "Hangar vertical wall structure",
@@ -386,7 +407,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0016": {
     "description": "Hangar vertical wall structure",
@@ -404,7 +426,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0017": {
     "description": "Hangar vertical wall structure",
@@ -422,7 +445,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0018": {
     "description": "Hangar vertical wall structure",
@@ -440,7 +464,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0019": {
     "description": "Hangar vertical wall structure",
@@ -458,7 +483,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0020": {
     "description": "Hangar vertical wall structure",
@@ -476,7 +502,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0021": {
     "description": "Hangar vertical wall structure",
@@ -494,7 +521,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0022": {
     "description": "Hangar vertical wall structure",
@@ -512,7 +540,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0023": {
     "description": "Hangar horizontal wall structure",
@@ -530,7 +559,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0024": {
     "description": "Hangar horizontal wall structure",
@@ -548,7 +578,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0025": {
     "description": "Hangar horizontal wall structure",
@@ -566,7 +597,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0026": {
     "description": "Hangar horizontal wall structure",
@@ -584,7 +616,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0027": {
     "description": "Hangar horizontal wall structure",
@@ -602,7 +635,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0028": {
     "description": "Hangar horizontal wall structure",
@@ -620,7 +654,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0029": {
     "description": "Hangar horizontal wall structure",
@@ -638,7 +673,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0030": {
     "description": "Hangar horizontal wall structure",
@@ -656,7 +692,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0031": {
     "description": "Hangar botton ceiling structure",
@@ -674,7 +711,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0032": {
     "description": "Hangar botton ceiling structure",
@@ -692,7 +730,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0033": {
     "description": "Hangar botton ceiling structure",
@@ -710,7 +749,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0034": {
     "description": "Hangar botton ceiling structure",
@@ -728,7 +768,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0035": {
     "description": "Hangar botton ceiling structure",
@@ -746,7 +787,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "CYLINDER_0036": {
     "description": "Hangar botton ceiling structure",
@@ -764,20 +806,8 @@
     "radius": 0.4,
     "size": [],
     "rotation": [],
-    "bounds": []
-  },
-  "SPHERE_0001": {
-    "description": "A test sphere",
-    "type": "sphere",
-    "center": [
-      -5,
-      10,
-      0
-    ],
-    "axis": [],
-    "radius": 2,
-    "size": [],
-    "rotation": []
+    "bounds": [],
+    "plane_constraints": []
   },
   "ELLIPSOID_0001": {
     "description": "Airplane left internal engine",
@@ -1050,5 +1080,155 @@
       0
     ],
     "plane_constraints": []
+  },
+  "CYLINDER_0037": {
+    "description": "Cylinder with plane contraint",
+    "type": "cylinder",
+    "center": [
+      -5,
+      12,
+      9
+    ],
+    "axis": [
+      0,
+      0,
+      1
+    ],
+    "radius": 0.5,
+    "size": [],
+    "rotation": [],
+    "bounds": [],
+    "plane_constraints": [
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        -3
+      ],
+      [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        3
+      ],
+      [
+        0,
+        1,
+        0.2,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "ELLIPSOID_0010": {
+    "description": "Ellipsoid with plane contraint",
+    "type": "ellipsoid",
+    "center": [
+      -5,
+      15,
+      9
+    ],
+    "axis": [],
+    "radius": [],
+    "size": [
+      3,
+      2,
+      1
+    ],
+    "rotation": [],
+    "angles": [
+      0,
+      0,
+      0
+    ],
+    "plane_constraints": [
+      [
+        -0.2,
+        0,
+        1,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "PLANE_0008": {
+    "description": "Plane with plane contraint",
+    "type": "plane",
+    "center": [
+      -1,
+      12,
+      9
+    ],
+    "axis": [
+      1,
+      0,
+      0
+    ],
+    "radius": [],
+    "size": [],
+    "rotation": [],
+    "plane_constraints": [
+      [
+        0,
+        -1,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0
+      ],
+      [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1
+      ]
+    ]
+  },
+  "SPHERE_0001": {
+    "description": "Sphere with plane contraint",
+    "type": "sphere",
+    "center": [
+      1,
+      16,
+      9
+    ],
+    "axis": [],
+    "radius": 1.5,
+    "size": [],
+    "rotation": [],
+    "plane_constraints": [
+      [
+        0,
+        0.4,
+        1,
+        0,
+        0,
+        0
+      ]
+    ]
   }
 }
