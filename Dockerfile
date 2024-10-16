@@ -17,9 +17,6 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-dynamic-reconfigure \
     && rm -rf /var/lib/apt/lists/*
 
-# Install any other dependencies (if required, adjust based on your package)
-# RUN apt-get install -y ros-noetic-<other-packages>
-
 # Copy your package to the workspace
 WORKDIR /root/catkin_ws/src
 COPY . /root/catkin_ws/src/lidar_sim
