@@ -6,24 +6,23 @@ using namespace std;
 using namespace Eigen;
 
 
-plane_constraint::plane_constraint(VectorXd n_0, double d_0){
+// plane_constraint::plane_constraint(VectorXd n_0, double d_0){
+//   VectorXd n_init(3);
+//   n_init = n_0;
+//   n = n_init;
+//   n = n/n.norm();
+//   d = d_0;
+// }
 
-  VectorXd n_init(3);
-  n_init = n_0;
-  n = n_init;
-  n = n/n.norm();
-  d = d_0;
-}
 
+// plane_constraint::plane_constraint(double nx, double ny, double nz, double d_0){
 
-plane_constraint::plane_constraint(double nx, double ny, double nz, double d_0){
-
-  VectorXd n_init(3);
-  n_init << nx, ny, nz;
-  n = n_init;
-  n = n/n.norm();
-  d = d_0;
-}
+//   VectorXd n_init(3);
+//   n_init << nx, ny, nz;
+//   n = n_init;
+//   n = n/n.norm();
+//   d = d_0;
+// }
 
 
 plane_constraint::plane_constraint(double nx, double ny, double nz, double cx, double cy, double cz){

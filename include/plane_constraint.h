@@ -16,8 +16,8 @@ class plane_constraint{
 
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    plane_constraint(VectorXd, double); //Construtor
-    plane_constraint(double, double, double,    double); //Construtor
+    // plane_constraint(VectorXd, double); //Construtor
+    // plane_constraint(double, double, double,    double); //Construtor
     plane_constraint(double, double, double,    double, double, double); //Construtor
     ~plane_constraint(); //Destructor
 

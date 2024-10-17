@@ -113,7 +113,6 @@ double ellipsoid_class::compute_distance(VectorXd position, VectorXd direction){
     return 1e6;
   }
 
-
   // Plane constraints
   Vector3d q;
   if(gamma_1 < 1e6){

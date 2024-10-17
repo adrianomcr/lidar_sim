@@ -11,14 +11,13 @@ using namespace Eigen;
 class ellipsoid_class{
   private:
 
-    double a,b,c,r012;
+    double r012;
     VectorXd center, Omega_center;
     VectorXd r;
     MatrixXd Omega;
     MatrixXd H_e_w, H_w_e, R_w_e, p_w_e;
 
     std::vector<plane_constraint *> plane_constraints;
-
 
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW

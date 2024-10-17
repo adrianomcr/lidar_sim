@@ -221,5 +221,5 @@ if __name__ == "__main__":
 
 
 
-
-    params.save_parameters('../config/world.json')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    params.save_parameters(script_dir+'/../config/world.json')
