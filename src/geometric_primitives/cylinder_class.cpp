@@ -17,6 +17,9 @@ cylinder_class::cylinder_class(VectorXd n_0, VectorXd p_0, double r_0){
   n = n/n.norm();
 
   r = r_0;
+
+  // lb = -1e6;
+  // ub = 1e6;
 }
 
 
@@ -32,26 +35,26 @@ cylinder_class::cylinder_class(double nx, double ny, double nz, double px, doubl
 
   r = r_0;
 
-  lb = -1e6;
-  ub = 1e6;
+  // lb = -1e6;
+  // ub = 1e6;
 }
 
 
-cylinder_class::cylinder_class(double nx, double ny, double nz, double px, double py, double pz, double r_0, double lb0, double ub0){
+// cylinder_class::cylinder_class(double nx, double ny, double nz, double px, double py, double pz, double r_0, double lb0, double ub0){
 
-  VectorXd n_init(3), p_init(3);
-  n_init << nx, ny, nz;
-  p_init << px, py, pz;
-  n = n_init;
-  p = p_init;
+//   VectorXd n_init(3), p_init(3);
+//   n_init << nx, ny, nz;
+//   p_init << px, py, pz;
+//   n = n_init;
+//   p = p_init;
 
-  n = n/n.norm();
+//   n = n/n.norm();
 
-  r = r_0;
+//   r = r_0;
 
-  lb = lb0;
-  ub = ub0;
-}
+//   lb = lb0;
+//   ub = ub0;
+// }
 
 
 void cylinder_class::add_plane_constraint(double nx, double ny, double nz, double cx, double cy, double cz){

@@ -19,8 +19,8 @@ class plane_class{
 
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    plane_class(VectorXd, double); //Construtor
-    plane_class(double, double, double,    double); //Construtor
+    // plane_class(VectorXd, double); //Construtor
+    // plane_class(double, double, double,    double); //Construtor
     plane_class(double, double, double,    double, double, double); //Construtor
     ~plane_class(); //Destructor
 

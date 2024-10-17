@@ -52,8 +52,8 @@ using json = nlohmann::json;
 // #define THREAD_1
 // #define THREAD_2
 // #define THREAD_4
-// #define THREAD_8
-#define THREAD_16
+#define THREAD_8
+// #define THREAD_16
 
 
 
@@ -274,9 +274,8 @@ int load_world_file(const std::string& filename)
         cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius));
       }
       else{
-        lb = value["bounds"][0];
-        ub = value["bounds"][1];
-        cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius, lb, ub));
+        cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius));
+        std::cout << "\33[91mCylinder bounts s deprecated. Use plane contraints instead\33[0m" << std::endl;
       }
       for (auto& constraint : value["plane_constraints"].items()){
         const json& cv = constraint.value();
@@ -324,7 +323,7 @@ int main(int argc, char **argv) {
     filename = argv[1];
   }
 
-  ros::Subscriber ekf_sub = nh.subscribe<nav_msgs::Odometry>("/lidar_odom_gt", 1, callback_odom);
+  ros::Subscriber odom_sub = nh.subscribe<nav_msgs::Odometry>("/lidar_odom_gt", 1, callback_odom);
   ros::Publisher pub_points = nh.advertise<sensor_msgs::PointCloud2>("/velodyne_points", 1);
 
 

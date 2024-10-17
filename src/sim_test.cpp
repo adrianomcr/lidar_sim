@@ -83,8 +83,6 @@ int main(int argc, char **argv) {
 //   ros::NodeHandle nh2("lidar_sim");
 //   read_parameters(nh2);
 
-// ros::Subscriber ekf_sub = nh.subscribe<nav_msgs::Odometry>("/ekf_odom", 1, GetEKf);
-
 
   ros::Publisher pub_test = nh.advertise<std_msgs::Bool>("/test", 1);
   ros::Publisher pub_points = nh.advertise<sensor_msgs::PointCloud2>("/velodyne_points", 1);
