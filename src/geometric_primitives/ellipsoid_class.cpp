@@ -27,12 +27,13 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
 
   r012 = r(0)*r(0)*r(1)*r(1)*r(2)*r(2);
 
+  double roll = 0;
   double pitch = 0;
   double yaw = 0;
-  H_e_w_init << cos(pitch)*cos(yaw), -sin(yaw), cos(yaw)*sin(pitch), cx,
-                cos(pitch)*sin(yaw), cos(yaw) , sin(pitch)*sin(yaw), cy,
-                -sin(pitch)        , 0        , cos(pitch)         , cz,
-                0                  , 0        , 0                  , 1;
+  H_e_w_init << cos(pitch)*cos(yaw), -cos(roll)*sin(yaw) + sin(roll)*sin(pitch)*cos(yaw), sin(roll)*sin(yaw) + cos(roll)*sin(pitch)*cos(yaw), cx,
+                cos(pitch)*sin(yaw), cos(roll)*cos(yaw) + sin(roll)*sin(pitch)*sin(yaw), -sin(roll)*cos(yaw) + cos(roll)*sin(pitch)*sin(yaw), cy,
+                -sin(pitch),         sin(roll)*cos(pitch),                                cos(roll)*cos(pitch),                               cz,
+                0,                   0,                                                   0,                                                  1;
   H_w_e_init = H_e_w_init.inverse();
 
   H_e_w = H_e_w_init;
@@ -42,7 +43,7 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
 }
 
 
-ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, double cy, double cz, double pitch, double yaw){
+ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, double cy, double cz, double roll, double pitch, double yaw){
 
   VectorXd center_init(3), r_init(3);
   MatrixXd H_e_w_init(4,4), H_w_e_init(4,4);
@@ -62,10 +63,10 @@ ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, 
 
   r012 = r(0)*r(0)*r(1)*r(1)*r(2)*r(2);
 
-  H_e_w_init << cos(pitch)*cos(yaw), -sin(yaw), cos(yaw)*sin(pitch), cx,
-                cos(pitch)*sin(yaw), cos(yaw) , sin(pitch)*sin(yaw), cy,
-                -sin(pitch)        , 0        , cos(pitch)         , cz,
-                0                  , 0        , 0                  , 1;
+  H_e_w_init << cos(pitch)*cos(yaw), -cos(roll)*sin(yaw) + sin(roll)*sin(pitch)*cos(yaw), sin(roll)*sin(yaw) + cos(roll)*sin(pitch)*cos(yaw), cx,
+              cos(pitch)*sin(yaw), cos(roll)*cos(yaw) + sin(roll)*sin(pitch)*sin(yaw), -sin(roll)*cos(yaw) + cos(roll)*sin(pitch)*sin(yaw), cy,
+              -sin(pitch),         sin(roll)*cos(pitch),                                cos(roll)*cos(pitch),                               cz,
+              0,                   0,                                                   0,                                                  1;
   H_w_e_init = H_e_w_init.inverse();
 
   H_e_w = H_e_w_init;

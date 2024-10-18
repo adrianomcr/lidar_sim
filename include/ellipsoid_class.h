@@ -22,7 +22,7 @@ class ellipsoid_class{
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     ellipsoid_class(double, double, double,    double, double, double); //Construtor
-    ellipsoid_class(double, double, double,    double, double, double,    double, double); //Construtor
+    ellipsoid_class(double, double, double,    double, double, double,    double, double, double); //Construtor
     ~ellipsoid_class(); //Destructor
 
     void add_plane_constraint(double, double, double, double, double, double);

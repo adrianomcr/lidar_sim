@@ -289,7 +289,7 @@ int load_world_file(const std::string& filename)
       center << value["center"][0], value["center"][1], value["center"][2];
       angles << value["angles"][0], value["angles"][1], value["angles"][2];
       std::cout << "Adding ellipsoid: " << description << std::endl;
-      ellipsoids.push_back( new ellipsoid_class(size(0),size(1),size(2), center(0),center(1),center(2), angles(1), angles(2)));
+      ellipsoids.push_back( new ellipsoid_class(size(0),size(1),size(2), center(0),center(1),center(2), angles(0),angles(1),angles(2)));
       std::cout << "constraints: " << value["plane_constraints"] << std::endl;
       for (auto& constraint : value["plane_constraints"].items()){
         const json& cv = constraint.value();
