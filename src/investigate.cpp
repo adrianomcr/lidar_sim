@@ -234,7 +234,7 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "lidar_sim");
   ros::NodeHandle nh;
 
-  ros::Subscriber ekf_sub = nh.subscribe<sensor_msgs::PointCloud2>("/velodyne_points", 1, GetPointcloud);
+  ros::Subscriber velodyne_sub = nh.subscribe<sensor_msgs::PointCloud2>("/velodyne_points", 1, GetPointcloud);
 
 
 

@@ -12,16 +12,15 @@ class cylinder_class{
   private:
 
     double r;
-    VectorXd n, p;
-    double lb, ub;
+    VectorXd n, p, center;
+
+    MatrixXd H_c_w, H_w_c, R_w_c, p_w_c;
 
     std::vector<plane_constraint *> plane_constraints;
 
   public:
   	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-    cylinder_class(VectorXd, VectorXd, double); //Construtor
     cylinder_class(double, double, double,    double, double, double,    double); //Construtor
-    // cylinder_class(double, double, double,    double, double, double,    double,    double, double); //Construtor
     ~cylinder_class(); //Destructor
 
     void add_plane_constraint(double, double, double, double, double, double);

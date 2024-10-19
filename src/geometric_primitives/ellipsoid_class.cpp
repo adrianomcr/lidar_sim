@@ -7,40 +7,9 @@ using namespace std;
 using namespace Eigen;
 
 
-ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, double cy, double cz){
-
-  VectorXd center_init(3), r_init(3);
-  MatrixXd H_e_w_init(4,4), H_w_e_init(4,4);
-
-  center_init << cx, cy, cz;
-  r_init << a_0, b_0, c_0;
-  center = center_init;
-  r = r_init;
-
-  MatrixXd Omega_init(3,3);
-  Omega_init << r(1)*r(1)*r(2)*r(2), 0.0, 0.0,
-                0.0, r(0)*r(0)*r(2)*r(2), 0.0,
-                0.0, 0.0, r(0)*r(0)*r(1)*r(1);
-  Omega = Omega_init;
-
-  Omega_center = Omega*center;
-
-  r012 = r(0)*r(0)*r(1)*r(1)*r(2)*r(2);
-
-  double roll = 0;
-  double pitch = 0;
-  double yaw = 0;
-  H_e_w_init << cos(pitch)*cos(yaw), -cos(roll)*sin(yaw) + sin(roll)*sin(pitch)*cos(yaw), sin(roll)*sin(yaw) + cos(roll)*sin(pitch)*cos(yaw), cx,
-                cos(pitch)*sin(yaw), cos(roll)*cos(yaw) + sin(roll)*sin(pitch)*sin(yaw), -sin(roll)*cos(yaw) + cos(roll)*sin(pitch)*sin(yaw), cy,
-                -sin(pitch),         sin(roll)*cos(pitch),                                cos(roll)*cos(pitch),                               cz,
-                0,                   0,                                                   0,                                                  1;
-  H_w_e_init = H_e_w_init.inverse();
-
-  H_e_w = H_e_w_init;
-  H_w_e = H_w_e_init;
-  R_w_e = H_w_e_init.block(0,0,3,3);
-  p_w_e = H_w_e_init.block(0,3,3,1);
-}
+ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, double cy, double cz) :
+ ellipsoid_class::ellipsoid_class(a_0, b_0, c_0, cx, cy, cz, 0.0, 0.0, 0.0)
+ { }
 
 
 ellipsoid_class::ellipsoid_class(double a_0, double b_0, double c_0, double cx, double cy, double cz, double roll, double pitch, double yaw){

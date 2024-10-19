@@ -47,13 +47,13 @@ class json_generator:
         self.ellipse_count = 0
 
 
-    def add_plane(self, center, axis, plane_constraints=[], description=""):
+    def add_plane(self, center, angles, plane_constraints=[], description=""):
         self.plane_count = self.plane_count+1
         d = {
         'description': description,
         'type': 'plane',
         'center': center,
-        'axis': axis,
+        'angles': angles,
         'radius': [],
         'size': [],
         'rotation': []
@@ -68,7 +68,6 @@ class json_generator:
         'description': description,
         'type': 'sphere',
         'center': center,
-        'axis': [],
         'radius': radius,
         'size': [],
         'rotation': []
@@ -77,13 +76,13 @@ class json_generator:
         self.data["SPHERE_"+str(self.sphere_count).zfill(4)] = d
 
 
-    def add_cylinder(self, center, axis, radius, bounds=[], plane_constraints=[], description=""):
+    def add_cylinder(self, center, angles, radius, bounds=[], plane_constraints=[], description=""):
         self.cylinder_count = self.cylinder_count+1
         d = {
         'description': description,
         'type': 'cylinder',
         'center': center,
-        'axis': axis,
+        'angles': angles,
         'radius': radius,
         'size': [],
         'rotation': [],
@@ -99,7 +98,6 @@ class json_generator:
         'description': description,
         'type': 'ellipsoid',
         'center': center,
-        'axis': [],
         'radius': [],
         'size': size,
         'rotation': [],
@@ -119,52 +117,52 @@ if __name__ == "__main__":
     params = json_generator()
 
     # Planes
-    params.add_plane(center=[0,0,0], axis=[0,0,1], plane_constraints=[], description='Hangar main floor')
-    params.add_plane(center=[5,0,0], axis=[1,0,0], plane_constraints=[], description='Hangar wall')
-    params.add_plane(center=[-65,0,0], axis=[1,0,0], plane_constraints=[], description='Hangar wall')
-    params.add_plane(center=[0,30,0], axis=[0,1,0], plane_constraints=[], description='Hangar wall')
-    params.add_plane(center=[0,-30,0], axis=[0,1,0], plane_constraints=[], description='Hangar wall')
-    params.add_plane(center=[0,0,25], axis=[0,0.3,1], plane_constraints=[], description='Hangar ceiling')
-    params.add_plane(center=[0,0,25], axis=[0,-0.3,1], plane_constraints=[], description='Hangar ceiling')
+    params.add_plane(center=[0,0,0], angles=[0,0,0], plane_constraints=[], description='Hangar main floor')
+    params.add_plane(center=[5,0,0], angles=[0,1.5707963267948966,0], plane_constraints=[], description='Hangar wall')
+    params.add_plane(center=[-65,0,0], angles=[0,1.5707963267948966,0], plane_constraints=[], description='Hangar wall')
+    params.add_plane(center=[0,30,0], angles=[1.5707963267948966,0,0], plane_constraints=[], description='Hangar wall')
+    params.add_plane(center=[0,-30,0], angles=[1.5707963267948966,0,0], plane_constraints=[], description='Hangar wall')
+    params.add_plane(center=[0,0,25], angles=[0.2914567944778671,0,0], plane_constraints=[], description='Hangar ceiling')
+    params.add_plane(center=[0,0,25], angles=[-0.2914567944778671,0,0], plane_constraints=[], description='Hangar ceiling')
 
     # Cylinders
-    params.add_cylinder(center=[-10,0,25], axis=[0,1,0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-20,0,25], axis=[0,1,0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-30,0,25], axis=[0,1,0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-40,0,25], axis=[0,1,0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-50,0,25], axis=[0,1,0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-10,0,25], axis=[0,1,-0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-20,0,25], axis=[0,1,-0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-30,0,25], axis=[0,1,-0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-40,0,25], axis=[0,1,-0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-50,0,25], axis=[0,1,-0.3], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
-    params.add_cylinder(center=[-10,30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-20,30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-30,30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-40,30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-50,30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-10,-30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-20,-30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-30,-30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-40,-30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-50,-30,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[5,0,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[-65,0,0], axis=[0,0,1], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
-    params.add_cylinder(center=[0,30,7], axis=[1,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[0,30,14], axis=[1,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[0,-30,7], axis=[1,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[0,-30,17], axis=[1,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[5,0,7], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[5,0,14], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[-65,0,7], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
-    params.add_cylinder(center=[-65,0,14], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[-10,0,25], angles=[1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-20,0,25], angles=[1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-30,0,25], angles=[1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-40,0,25], angles=[1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-50,0,25], angles=[1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-10,0,25], angles=[-1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-20,0,25], angles=[-1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-30,0,25], angles=[-1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-40,0,25], angles=[-1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-50,0,25], angles=[-1.2793395,0,0], radius=0.4, plane_constraints=[], description='Hangar ceiling structure')
+    params.add_cylinder(center=[-10,30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-20,30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-30,30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-40,30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-50,30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-10,-30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-20,-30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-30,-30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-40,-30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-50,-30,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[5,0,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[-65,0,0], angles=[0,0,0], radius=0.4, plane_constraints=[], description='Hangar vertical wall structure')
+    params.add_cylinder(center=[0,30,7], angles=[0,1.5707963268,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[0,30,14], angles=[0,1.5707963268,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[0,-30,7], angles=[0,1.5707963268,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[0,-30,17], angles=[0,1.5707963268,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[5,0,7], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[5,0,14], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[-65,0,7], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
+    params.add_cylinder(center=[-65,0,14], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar horizontal wall structure')
 
-    params.add_cylinder(center=[0,0,19.25], axis=[1,0,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
-    params.add_cylinder(center=[-10,0,19.25], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
-    params.add_cylinder(center=[-20,0,19.25], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
-    params.add_cylinder(center=[-30,0,19.25], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
-    params.add_cylinder(center=[-40,0,19.25], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
-    params.add_cylinder(center=[-50,0,19.25], axis=[0,1,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[0,0,19.25], angles=[0,1.5707963268,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-10,0,19.25], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-20,0,19.25], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-30,0,19.25], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-40,0,19.25], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
+    params.add_cylinder(center=[-50,0,19.25], angles=[1.5707963268,0,0], radius=0.4, plane_constraints=[], description='Hangar botton ceiling structure')
 
     # Airplane shapes
     params.add_ellipsoid(center=[-20,8,4.5], size=[5.5,1.6,1,6], angles=[0,0,0], plane_constraints=[[-1,0,0,0,0,0]], description='Airplane left internal engine')
@@ -178,35 +176,35 @@ if __name__ == "__main__":
     params.add_ellipsoid(center=[-56,0,16], size=[4,8,0.6], angles=[0,-0.1,0], description='Airplane tail wing')
 
 
-    # Test plane contraint
+    # Test plane contraints
     params.add_cylinder(
         center=[-5,12,9],
-        axis=[0,0,1],
+        angles=[1.57,0,0],
         radius=0.5,
         plane_constraints=[
-            [0,0,1,0,0,-3],
-            [0,0,-1,0,0,3],
-            [0,1,0.2,0,0,0]
+            [0,0,1,0,0,-1],
+            [0,0,-1,0,0,5],
+            [0,1,-0.2, 0,-0.25,0]
             ],
         description='Cylinder with plane contraint'
         )
     params.add_ellipsoid(
-        center=[-5,15,9],
+        center=[-5,17,9],
         size=[3,2,1],
-        angles=[0,0,0],
+        angles=[-0.5,0,0],
         plane_constraints=[
-            [-0.2,0,1,0,0,0]
+            [-0.4,0,1,0,0,0]
             ],
         description='Ellipsoid with plane contraint'
         )
     params.add_plane(
         center=[-1,12,9],
-        axis=[1,0,0],
+        angles=[0.5,1.5707963267948966,0],
         plane_constraints=[
             [0,-1,0,0,1,0],
             [0,1,0,0,-1,0],
-            [0,0,-1,0,0,1],
-            [0,0,1,0,0,-1],
+            [-1,0,0,1,0,0],
+            [1,0,0,-1,0,0],
             ],
         description='Plane with plane contraint'
         )
