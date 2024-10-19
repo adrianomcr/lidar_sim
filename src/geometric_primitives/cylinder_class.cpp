@@ -6,60 +6,46 @@ using namespace std;
 using namespace Eigen;
 
 
-cylinder_class::cylinder_class(VectorXd n_0, VectorXd p_0, double r_0){
+cylinder_class::cylinder_class(double cx, double cy, double cz, double roll, double pitch, double yaw, double r_0){
 
-  VectorXd n_init(3), p_init(3);
-  n_init = n_0;
-  p_init = p_0;
-  n = n_init;
-  p = p_init;
+  VectorXd center_init(3), n_init(3);
+  MatrixXd H_c_w_init(4,4), H_w_c_init(4,4);
 
-  n = n/n.norm();
-
+  center_init << cx, cy, cz;
   r = r_0;
+  center = center_init;
+  p = center_init;
+  
+  H_c_w_init << cos(pitch)*cos(yaw), -cos(roll)*sin(yaw) + sin(roll)*sin(pitch)*cos(yaw), sin(roll)*sin(yaw) + cos(roll)*sin(pitch)*cos(yaw), cx,
+              cos(pitch)*sin(yaw), cos(roll)*cos(yaw) + sin(roll)*sin(pitch)*sin(yaw), -sin(roll)*cos(yaw) + cos(roll)*sin(pitch)*sin(yaw), cy,
+              -sin(pitch),         sin(roll)*cos(pitch),                                cos(roll)*cos(pitch),                               cz,
+              0,                   0,                                                   0,                                                  1;
+  H_w_c_init = H_c_w_init.inverse();
 
-  // lb = -1e6;
-  // ub = 1e6;
+  n_init = H_c_w_init.block(0,2,3,1);
+  n = n_init;
+  n = n/n.norm();
+  
+  H_c_w = H_c_w_init;
+  H_w_c = H_w_c_init;
+  R_w_c = H_w_c_init.block(0,0,3,3);
+  p_w_c = H_w_c_init.block(0,3,3,1);
 }
 
-
-cylinder_class::cylinder_class(double nx, double ny, double nz, double px, double py, double pz, double r_0){
-
-  VectorXd n_init(3), p_init(3);
-  n_init << nx, ny, nz;
-  p_init << px, py, pz;
-  n = n_init;
-  p = p_init;
-
-  n = n/n.norm();
-
-  r = r_0;
-
-  // lb = -1e6;
-  // ub = 1e6;
-}
-
-
-// cylinder_class::cylinder_class(double nx, double ny, double nz, double px, double py, double pz, double r_0, double lb0, double ub0){
-
-//   VectorXd n_init(3), p_init(3);
-//   n_init << nx, ny, nz;
-//   p_init << px, py, pz;
-//   n = n_init;
-//   p = p_init;
-
-//   n = n/n.norm();
-
-//   r = r_0;
-
-//   lb = lb0;
-//   ub = ub0;
-// }
 
 
 void cylinder_class::add_plane_constraint(double nx, double ny, double nz, double cx, double cy, double cz){
 
-  plane_constraints.push_back( new plane_constraint(nx,ny,nz,cx,cy,cz) );
+  //  Transform the contraint (originaly written on the cylinder frame) to a frame aligned with the world but centered in the center of the cylinder
+  VectorXd n_local(3), n_global(3), p_local(3), p_global(3);
+  n_local << nx,ny,nz;
+  n_global = R_w_c.transpose() * n_local;
+  p_local << cx,cy,cz;
+  p_global = R_w_c.transpose() * p_local;
+
+  plane_constraints.push_back( new plane_constraint(n_global(0),n_global(1),n_global(2), p_global(0),p_global(1),p_global(2)) );
+
+  //  plane_constraints.push_back( new plane_constraint(nx,ny,nz,cx,cy,cz) );
 
 }
 

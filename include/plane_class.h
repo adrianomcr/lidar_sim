@@ -15,6 +15,8 @@ class plane_class{
     VectorXd n;
     VectorXd center;
 
+    MatrixXd H_p_w, H_w_p, R_w_p, p_w_p;
+
     std::vector<plane_constraint *> plane_constraints;
 
   public:

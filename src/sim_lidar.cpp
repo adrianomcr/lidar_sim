@@ -227,7 +227,8 @@ int load_world_file(const std::string& filename)
   json jsonData;
   file >> jsonData;
 
-  Eigen::Vector3d axis, center, size, angles;
+  // Eigen::Vector3d axis, center, size, angles;
+  Eigen::Vector3d center, size, angles;
   float radius, lb, ub;
 
   // Iterate over the fields of the JSON object
@@ -240,10 +241,12 @@ int load_world_file(const std::string& filename)
       const std::string& type = value["type"];
 
     if(type=="plane"){
-      axis << value["axis"][0], value["axis"][1], value["axis"][2];
+      // axis << value["axis"][0], value["axis"][1], value["axis"][2];
       center << value["center"][0], value["center"][1], value["center"][2];
+      angles << value["angles"][0], value["angles"][1], value["angles"][2];
       std::cout << "Adding plane: " << description << std::endl;
-      planes.push_back( new plane_class(axis(0),axis(1),axis(2), center(0),center(1),center(2)));
+      // planes.push_back( new plane_class(axis(0),axis(1),axis(2), center(0),center(1),center(2)));
+      planes.push_back( new plane_class(center(0),center(1),center(2), angles(0),angles(1),angles(2)));
       std::cout << "constraints: " << value["plane_constraints"] << std::endl;
       for (auto& constraint : value["plane_constraints"].items()){
         const json& cv = constraint.value();
@@ -266,17 +269,13 @@ int load_world_file(const std::string& filename)
       } 
     }
     else if(type=="cylinder"){
-      axis << value["axis"][0], value["axis"][1], value["axis"][2];
+      // axis << value["axis"][0], value["axis"][1], value["axis"][2];
       center << value["center"][0], value["center"][1], value["center"][2];
+      angles << value["angles"][0], value["angles"][1], value["angles"][2];
       radius = value["radius"];
       std::cout << "Adding cylinder: " << description << std::endl;
-      if(value["bounds"].empty()){
-        cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius));
-      }
-      else{
-        cylinders.push_back( new cylinder_class(axis(0),axis(1),axis(2), center(0),center(1),center(2), radius));
-        std::cout << "\33[91mCylinder bounts s deprecated. Use plane contraints instead\33[0m" << std::endl;
-      }
+      cylinders.push_back( new cylinder_class(center(0),center(1),center(2), angles(0),angles(1),angles(2), radius));
+      std::cout << "constraints: " << value["plane_constraints"] << std::endl;
       for (auto& constraint : value["plane_constraints"].items()){
         const json& cv = constraint.value();
         std::cout << "constraint: " << cv << std::endl;
