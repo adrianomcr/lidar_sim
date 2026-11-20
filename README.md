@@ -26,7 +26,7 @@ xhost +local:docker
 
 Run the docker container
 ```bash
-docker compose -f docker-compose.yaml run --rm sim4cd bash
+docker compose -f docker-compose.yaml run --rm lidar_sim bash
 ```
 
 

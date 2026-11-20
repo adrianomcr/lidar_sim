@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     cmake \
+    pkg-config \
+    libeigen3-dev \
     python3-pip \
     python3-catkin-tools \
     ros-noetic-rviz \
@@ -17,16 +19,13 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-dynamic-reconfigure \
     && rm -rf /var/lib/apt/lists/*
 
-# Install any other dependencies (if required, adjust based on your package)
-# RUN apt-get install -y ros-noetic-<other-packages>
-
 # Copy your package to the workspace
 WORKDIR /root/catkin_ws/src
 COPY . /root/catkin_ws/src/lidar_sim
 
 # Build the workspace
 WORKDIR /root/catkin_ws/
-RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build"
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash && catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release"
 
 # Source the environment when starting a container
 RUN echo "source /root/catkin_ws/devel/setup.bash" >> ~/.bashrc
