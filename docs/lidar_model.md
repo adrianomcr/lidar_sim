@@ -25,28 +25,28 @@ $e_{\max} < e_{\min}$, $r_{\max} \le r_{\min}$) and clamps `num_threads` to $[1,
 
 ## Beam geometry
 
-Ring $k \in \{0, \dots, N_r - 1\}$ points at the elevation
+Ring $k \in \lbrace 0, \dots, N_r - 1 \rbrace$ points at the elevation
 
-$$
+```math
 e_k = e_{\min} + k\, \Delta e, \qquad \Delta e = \frac{e_{\max} - e_{\min}}{N_r - 1}
-$$
+```
 
 ($\Delta e = 0$ for a single ring), so ring 0 is the lowest beam. Firing
-$i \in \{0, \dots, N_a - 1\}$ happens at the azimuth
+$i \in \lbrace 0, \dots, N_a - 1 \rbrace$ happens at the azimuth
 
-$$
+```math
 \alpha_i = \frac{2\pi\, i}{N_a}.
-$$
+```
 
 The unit direction of beam $(i, k)$ in the sensor frame is
 
-$$
+```math
 b_{i,k} = \begin{bmatrix} \cos e_k \cos\alpha_i \\ -\cos e_k \sin\alpha_i \\ \sin e_k \end{bmatrix}.
-$$
+```
 
 The minus sign makes the head spin **clockwise seen from above**, like a Velodyne: azimuth 0 is
 the sensor's $+x$ axis and azimuth grows towards $-y$. The azimuth of any point $p$ of the cloud
-is therefore $\operatorname{atan2}(-p_y, p_x)$, wrapped to $[0, 2\pi)$.
+is therefore $\mathrm{atan2}(-p_y, p_x)$, wrapped to $[0, 2\pi)$.
 
 All directions, azimuths and firing times are computed once in the constructor.
 
@@ -55,16 +55,16 @@ All directions, azimuths and firing times are computed once in the constructor.
 `scan(world, position, orientation, returns)` simulates a full revolution with the sensor frozen
 at the pose $(x, R)$:
 
-1. For each beam, cast the world ray $o = x$, $d = R\, b_{i,k}$ and get the closest distance
+1. For each beam, cast the world ray $o = x$, $d = R\thinspace b_{i,k}$ and get the closest distance
    $t^\star$ ([Ray casting](ray_casting.md)).
 2. Keep the return only if $r_{\min} < t^\star < r_{\max}$. Misses ($t^\star = \infty$) and hits
    outside the range are marked invalid.
 3. Express the hit in the sensor frame. The ray is rigidly attached to the sensor, so this is
    simply
 
-$$
+```math
 p_{i,k} = R^\top \big( (x + t^\star R\, b_{i,k}) - x \big) = t^\star\, b_{i,k}.
-$$
+```
 
 Each `LidarReturn` stores `valid`, the point, `distance` $= t^\star$, `azimuth` $= \alpha_i$, the
 constant `intensity`, `ring` $= k$, and `time` (below). Returns are stored at index
@@ -74,9 +74,9 @@ $i \cdot N_r + k$: firing first, ring second.
 
 With the scan period $T = 1/f$, firing $i$ happens at
 
-$$
+```math
 \tau_i = T\, \frac{i}{N_a}
-$$
+```
 
 after the start of the revolution, and all rings of a firing share that time. With the defaults
 the times go from 0 to 99.94 ms.

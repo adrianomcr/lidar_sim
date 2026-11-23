@@ -8,18 +8,18 @@ them into finite or open pieces: a tube, a square panel, a dome, an engine intak
 A constraint is a plane given by a normal $n$ (any non-zero length) and a point $p_0$ on it. It
 keeps the half-space the normal points to:
 
-$$
+```math
 \text{keep } p \iff \hat n \cdot (p - p_0) > 0, \qquad \hat n = \frac{n}{\lVert n \rVert}.
-$$
+```
 
 $h(p) = \hat n \cdot (p - p_0)$ is the signed distance from $p$ to the cutting plane, so a
 point is kept when it lies strictly on the positive side. The constructor of `PlaneConstraint`
 stores $\hat n$ and the offset $\delta = \hat n \cdot p_0$, and the test becomes a single dot
 product:
 
-$$
+```math
 \hat n \cdot p - \delta > 0.
-$$
+```
 
 - The inequality is strict: points exactly on the cutting plane are removed.
 - A zero normal is rejected with an exception when the world is loaded.
@@ -33,18 +33,18 @@ file moves its cuts with it.
 To cut along a plane known in world coordinates (normal $n_w$ through $p_w$), convert it with the
 primitive's pose:
 
-$$
+```math
 n = R^\top n_w, \qquad p_0 = R^\top (p_w - c).
-$$
+```
 
 ## Several constraints
 
 All constraints of a primitive must hold. The kept region is the intersection of half-spaces, a
 convex (possibly unbounded) polyhedron:
 
-$$
+```math
 K = \bigcap_i \{\, p : \hat n_i \cdot (p - p_{0,i}) > 0 \,\}.
-$$
+```
 
 The visible surface is the part of the primitive inside $K$. A non-convex region, like a wall with
 a window, cannot be expressed by one primitive. Use several copies of the same primitive, each
@@ -106,7 +106,7 @@ the $y < 0$ half.
 
 **Closing the end of a tube.** Constraints only remove surface. To close a tube of length $L$, add
 a plane with the same `angles`, centered at the end of the tube
-($c + R\,(0, 0, L/2)$ in world coordinates), and bound it to a regular $N$-gon of inradius $\rho$.
+($c + R\thinspace(0, 0, L/2)$ in world coordinates), and bound it to a regular $N$-gon of inradius $\rho$.
 For $k = 0, \dots, N-1$ and $\theta_k = 2\pi k / N$:
 
 ```yaml

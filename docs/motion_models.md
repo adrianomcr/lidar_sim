@@ -10,23 +10,23 @@ IMU reading.
 | Circle | `MotionSimulator` | `sim_motion` | Kinematic body tracking a circle, constant orientation |
 | Quadrotor | `DroneSimulator` | `sim_drone` | Quadrotor with thrust and body-rate control flying waypoints |
 
-Notation: position $x$ and velocity $v$ in the world frame, orientation $q$ (body to world, with
-rotation matrix $R(q)$), body angular velocity $\omega$, gravity $g$, $\hat z = (0, 0, 1)$.
+Notation: position $x$ and velocity $v$ in the world frame, orientation $q$ from body to world
+with rotation matrix $R(q)$, body angular velocity $\omega$, gravity $g$, $\hat z = (0, 0, 1)$.
 
 ## Rigid body integration
 
 `RigidBodyState::integrate(a, dt)` advances the state with one explicit Euler step, holding the
 world acceleration $a$ and the body rates $\omega$ constant over the step:
 
-$$
+```math
 \begin{aligned}
-x_{k+1} &= x_k + v_k\, \Delta t \\
-v_{k+1} &= v_k + a_k\, \Delta t \\
-q_{k+1} &= \operatorname{normalize}\!\left(q_k + \tfrac{\Delta t}{2}\, q_k \otimes (0, \omega_k)\right)
+x_{k+1} &= x_k + v_k\, \Delta t
+\\ v_{k+1} &= v_k + a_k\, \Delta t
+\\ q_{k+1} &= \mathrm{normalize}\!\left(q_k + \tfrac{\Delta t}{2}\, q_k \otimes (0, \omega_k)\right)
 \end{aligned}
-$$
+```
 
-The last line is the quaternion kinematics $\dot q = \frac{1}{2}\, q \otimes (0, \omega)$ for
+The last line is the quaternion kinematics $\dot q = \frac{1}{2}\thinspace q \otimes (0, \omega)$ for
 body-frame rates, followed by a renormalization that keeps $q$ a unit quaternion. The position
 uses the velocity from before the step. These are first-order schemes, accurate enough at the
 default 50 Hz for the smooth motions simulated here.
@@ -37,11 +37,11 @@ default 50 Hz for the smooth motions simulated here.
 the rotation $q_m$ (IMU to body). Given the specific force $f$ in the world frame
 ([Conventions](conventions.md#angular-velocity-and-acceleration)):
 
-$$
+```math
 q_{\text{imu}} = q \otimes q_m, \qquad
 \omega_{\text{imu}} = R(q_m)^\top \omega, \qquad
 f_{\text{imu}} = R(q_{\text{imu}})^\top f.
-$$
+```
 
 The LiDAR and the IMU share the mount, so $q_{\text{imu}}$ is also the LiDAR orientation
 published on `lidar_odom_gt`. The simulators measure the IMU after integrating, so the reading
@@ -54,10 +54,10 @@ combines the new orientation with the rates and forces applied during the step.
 `CircularTrajectory` describes a circle of radius $\rho$ around $c$, in the plane spanned by two
 orthogonal unit axes $u_1$, $u_2$, traveled at the angular speed $\Omega$:
 
-$$
+```math
 p_r(t) = c + \rho\left(\cos(\Omega t)\, u_1 + \sin(\Omega t)\, u_2\right), \qquad
 v_r(t) = \rho\,\Omega\left(-\sin(\Omega t)\, u_1 + \cos(\Omega t)\, u_2\right).
-$$
+```
 
 The axes are normalized when the trajectory is built, and it throws if they are zero or not
 orthogonal. With the defaults ($c = (-12, 0, 7)$, $\rho = 6$, $\Omega = 0.4$ rad/s,
@@ -69,21 +69,21 @@ $u_1 = \hat y$, $u_2 = \hat z$) the circle is vertical, in the plane $x = -12$, 
 The body is a double integrator commanded in acceleration. A velocity command corrects the
 reference velocity with the position error, and the acceleration drives the velocity towards it:
 
-$$
+```math
 v_c = v_r(t) + k_p\,\big(p_r(t) - x\big), \qquad a = k_v\,(v_c - v).
-$$
+```
 
 Before `start_delay` ($t < t_0$) the acceleration is zero and the body waits at its initial
 position. The angular velocity is always zero, so the orientation stays at `initial_rpy_deg`.
-The IMU feels $f = a + g\,\hat z$.
+The IMU feels $f = a + g\thinspace\hat z$.
 
 ### Closed-loop behavior
 
-Taking Laplace transforms of $\ddot x = k_v\,(\dot p_r + k_p\,(p_r - x) - \dot x)$:
+Taking Laplace transforms of $\ddot x = k_v\thinspace(\dot p_r + k_p\thinspace(p_r - x) - \dot x)$:
 
-$$
+```math
 \frac{X(s)}{P_r(s)} = G(s) = \frac{k_v\,(s + k_p)}{s^2 + k_v\, s + k_v k_p}.
-$$
+```
 
 With the default gains $k_p = 0.2$, $k_v = 0.4$ the poles are $s = -0.2 \pm 0.2j$ (damping 0.71,
 time constant 5 s). The reference acceleration is not fed forward, so the body does not sit on
@@ -100,11 +100,11 @@ The drone is a point mass with an attitude. The inputs are the mass-normalized t
 the body z axis and the body rates $\omega$, which are tracked perfectly (no rotational
 dynamics). Linear drag with coefficient $c_d$ opposes the velocity:
 
-$$
+```math
 \dot x = v, \qquad
 \dot v = R(q)\begin{bmatrix}0\\0\\T\end{bmatrix} - g\,\hat z - c_d\, v, \qquad
 \dot q = \tfrac{1}{2}\, q \otimes (0, \omega).
-$$
+```
 
 These are integrated with the Euler scheme above.
 
@@ -116,54 +116,54 @@ $\psi_w$) into $T$ and $\omega$ in four stages.
 **1. Velocity field.** With $e = x - p_w$ and $\delta = \lVert e \rVert$, the desired velocity
 points at the waypoint with a speed that saturates far away and fades out close to it:
 
-$$
+```math
 s(\delta) = v_{\text{cruise}}\, \frac{2}{\pi} \arctan(k_d\, \delta), \qquad
 v_r = -s(\delta)\, \frac{e}{\delta + \varepsilon}, \quad \varepsilon = 10^{-6}.
-$$
+```
 
 Far away $s \to v_{\text{cruise}}$; close to the waypoint
-$s \approx \frac{2}{\pi} v_{\text{cruise}} k_d\, \delta$, a linear law that brings the drone in
+$s \approx \frac{2}{\pi} v_{\text{cruise}} k_d\thinspace\delta$, a linear law that brings the drone in
 exponentially with the rate $\frac{2}{\pi} v_{\text{cruise}} k_d$ (1.06 s⁻¹ with the defaults).
 $\varepsilon$ avoids a division by zero at the waypoint.
 
 **2. Desired thrust vector.** A proportional velocity loop plus gravity compensation:
 
-$$
+```math
 f_d = k_v\,(v_r - v) + g\,\hat z.
-$$
+```
 
 **3. Reference attitude.** The body z axis must point along $f_d$, and the body x axis as close as
 possible to the waypoint heading $h = (\cos\psi_w, \sin\psi_w, 0)$ (Gram-Schmidt):
 
-$$
+```math
 z_r = \frac{f_d}{\lVert f_d \rVert}, \qquad
 x_r = \frac{h - (h \cdot z_r)\, z_r}{\lVert h - (h \cdot z_r)\, z_r \rVert}, \qquad
 y_r = z_r \times x_r, \qquad
 R_r = [\,x_r \;\; y_r \;\; z_r\,].
-$$
+```
 
 The thrust is the projection of $f_d$ on $z_r$, which is simply its norm, limited to $\kappa$
 times gravity (`max_thrust_to_weight`):
 
-$$
+```math
 T = \min\left(f_d \cdot z_r,\; \kappa\, g\right).
-$$
+```
 
 The thrust is applied along the **current** body z axis, not along $z_r$: horizontal acceleration
 only builds up as the attitude loop tilts the drone.
 
 **4. Attitude loop.** The attitude error, expressed in the body frame, is
-$q_e = q^{*} \otimes q_r$, with axis $u$ and angle $\theta \in [0, \pi]$. The body rates rotate
+$q_e = q^{\ast} \otimes q_r$, with axis $u$ and angle $\theta \in [0, \pi]$. The body rates rotate
 the drone towards the reference:
 
-$$
+```math
 \omega = k_a\, \sin\theta\; u, \qquad
-\omega_z \leftarrow \operatorname{clamp}(\omega_z, -\omega_{z,\max}, \omega_{z,\max}).
-$$
+\omega_z \leftarrow \mathrm{clamp}(\omega_z, -\omega_{z,\max}, \omega_{z,\max}).
+```
 
-For small errors $\omega \approx k_a\, \theta\, u$, a proportional loop with a time constant of
+For small errors $\omega \approx k_a\thinspace\theta\thinspace u$, a proportional loop with a time constant of
 $1/k_a$ (0.33 s with the defaults). Writing $q_e = (\cos\frac{\theta}{2}, \sin\frac{\theta}{2} u)$
-shows that $\sin\theta\, u = 2\, q_{e,w}\, q_{e,\text{vec}}$, the classic quaternion-error
+shows that $\sin\theta\thinspace u = 2\thinspace q_{e,w}\thinspace q_{e,\text{vec}}$, the classic quaternion-error
 feedback. The yaw rate limit makes heading changes slow and smooth.
 
 The construction of $x_r$ breaks down if $f_d$ is horizontal, which would require the drone to
@@ -179,7 +179,7 @@ climb about $g / k_v$ faster than commanded; it does not happen in normal operat
 | $z <$ `min_attitude_control_altitude` | $\omega = 0$ | Attitude frozen (level), so the drone climbs straight up |
 | otherwise | controller output | Waypoint tracking |
 
-The IMU uses the specific force of the thrust, $f = R(q)\,(0, 0, T)$. Drag is not included, a
+The IMU uses the specific force of the thrust, $f = R(q)\thinspace(0, 0, T)$. Drag is not included, a
 simplification kept from the original simulator.
 
 ### Waypoint mission

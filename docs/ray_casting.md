@@ -8,9 +8,9 @@ test in [constraints.md](constraints.md).
 
 A ray starts at the sensor position $o$ and travels along the unit direction $d$:
 
-$$
+```math
 r(t) = o + t\, d, \qquad \lVert d \rVert = 1, \quad t > 0.
-$$
+```
 
 Because $d$ has unit length, the ray parameter $t$ of a hit is its distance from the sensor.
 
@@ -20,11 +20,11 @@ Each primitive is defined in a local frame with origin $c$ (`center`) and rotati
 where its shape has a simple equation: a plane is $z = 0$, a cylinder is $x^2 + y^2 = \rho^2$, and
 so on. Instead of transforming the shape, `Primitive::intersect()` transforms the ray:
 
-$$
+```math
 o' = R^\top (o - c), \qquad d' = R^\top d.
-$$
+```
 
-$R^\top$ is a rotation, so $\lVert d' \rVert = 1$ and the local ray $o' + t\,d'$ passes through
+$R^\top$ is a rotation, so $\lVert d' \rVert = 1$ and the local ray $o' + t\thinspace d'$ passes through
 the local point $p' = R^\top(p - c)$ at the same $t$ as the world ray passes through $p$. **Ray
 parameters computed in the local frame are therefore world distances**, and nothing has to be
 transformed back. $R^\top$ is computed once per primitive when it is created.
@@ -48,7 +48,7 @@ $b^2 - 4ac$ is negative (the ray misses). A tangent ray gives a double root.
 
 1. is in front of the sensor: $t > 0$, and
 2. lies in the region kept by **every** plane constraint of the primitive, tested at the local
-   point $p' = o' + t\,d'$.
+   point $p' = o' + t\thinspace d'$.
 
 If no candidate qualifies, it returns `kNoHit` ($+\infty$).
 
@@ -77,14 +77,14 @@ flowchart TD
 
 `World::castRay()` intersects the ray with every primitive and keeps the smallest distance:
 
-$$
+```math
 t^\star = \min_k\, t_k(o, d).
-$$
+```
 
 The scene is the union of all surfaces, and the nearest one occludes the others. This alone can
 build shapes without any constraint. The two roof planes of the example hangar,
-$z = 25 + 0.3\,y$ and $z = 25 - 0.3\,y$, are infinite, but from inside the hangar the nearest one
-is always the lower one, so the sensor sees a gabled roof $z = 25 - 0.3\,|y|$.
+$z = 25 + 0.3\thinspace y$ and $z = 25 - 0.3\thinspace y$, are infinite, but from inside the hangar the nearest one
+is always the lower one, so the sensor sees a gabled roof $z = 25 - 0.3\thinspace |y|$.
 
 The LiDAR then applies its range gate ($t_{\min} < t^\star < t_{\max}$, see
 [LiDAR model](lidar_model.md)). A surface closer than `min_range` still occludes everything
