@@ -8,16 +8,17 @@ of $N_r$ beams (rings) fired $N_a$ times per revolution at evenly spaced azimuth
 | Symbol | `LidarConfig` field | Parameter in `params.yaml` | Default |
 | --- | --- | --- | --- |
 | $f$ | `scan_rate` | `scan_rate` | 10 Hz |
-| $N_a$ | `num_azimuth_steps` | `num_azimuth_steps` | 1800 (0.2°) |
-| $N_r$ | `num_rings` | `num_rings` | 16 |
-| $e_{\min}$ | `min_elevation` [rad] | `min_elevation_deg` | −22.5° |
-| $e_{\max}$ | `max_elevation` [rad] | `max_elevation_deg` | 19.6875° |
+| $N_a$ | `num_azimuth_steps` | `num_azimuth_steps` | 1024 (0.35°) |
+| $N_r$ | `num_rings` | `num_rings` | 64 |
+| $e_{\min}$ | `min_elevation` [rad] | `min_elevation_deg` | −45° |
+| $e_{\max}$ | `max_elevation` [rad] | `max_elevation_deg` | 45° |
 | $r_{\min}$, $r_{\max}$ | `min_range`, `max_range` | same | 1 m, 100 m |
 | | `intensity` | `intensity` | 60 |
 | | `num_threads` | `num_threads` | 8 |
 
-The defaults reproduce the original simulator: 16 rings spaced by 2.8125°. A real Velodyne VLP-16
-has 16 rings from −15° to +15° (2° spacing); set `min_elevation_deg: -15` and
+The shipped example uses 1024 azimuth steps and 64 rings from −45° to +45°. The original
+simulator used 16 rings from −22.5° to 19.6875°, spaced by 2.8125°. A real Velodyne VLP-16
+has 16 rings from −15° to +15° (2° spacing); set `num_rings: 16`, `min_elevation_deg: -15` and
 `max_elevation_deg: 15` to match it.
 
 The constructor rejects inconsistent values (non-positive rate, fewer than one ring or step,
@@ -126,7 +127,7 @@ The rings are split into `num_threads` contiguous blocks; thread $j$ processes r
 $\lfloor j N_r / T_h \rfloor$ to $\lfloor (j+1) N_r / T_h \rfloor - 1$, where $T_h$ is the
 number of threads. Each thread writes only its own returns, so no locking is needed.
 
-The work per revolution is $N_a N_r$ rays times the number of objects (about 1.6 million
+The work per revolution is $N_a N_r$ rays times the number of objects (about 3.7 million
 ray-primitive tests with the defaults and the example scene). The node logs a throttled warning
 when a scan takes longer than the scan period, which means the published rate will drop below
 `scan_rate`. Reduce `num_azimuth_steps`, the number of objects, or the rate, or add threads.

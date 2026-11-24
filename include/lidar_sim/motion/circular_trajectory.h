@@ -5,6 +5,16 @@
 
 namespace lidar_sim {
 
+/// Right-handed unit axes of the plane with this normal: first × second points along `normal`.
+/// A normal of (0, 0, 1) gives first = (1, 0, 0) and second = (0, 1, 0), a circle parallel to xy.
+/// @throws std::invalid_argument if `normal` has zero length.
+void circleAxesFromNormal(const Eigen::Vector3d& normal, Eigen::Vector3d& first_axis,
+                          Eigen::Vector3d& second_axis);
+
+/// Angular speed [rad/s] for a tangential speed [m/s]. Returns 0 when `radius` is 0.
+/// Positive speed follows the right-hand rule about the plane normal.
+double angularSpeedFromLinear(double linear_speed, double radius);
+
 /// Constant-speed circle: p(t) = center + radius * (cos(w t) * first_axis + sin(w t) * second_axis).
 class CircularTrajectory {
  public:
