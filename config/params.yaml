@@ -1,0 +1,93 @@
+# Runtime parameters of the lidar_sim nodes, loaded by launch/example.launch.
+#
+# Each top-level key is the private namespace of one node, so it must match the node name used
+# in the launch file. Units are SI (m, s, rad/s); parameters ending in _deg are in degrees.
+# Orientations are [roll, pitch, yaw] applied as Rz(yaw) * Ry(pitch) * Rx(roll).
+
+sim_lidar:
+  world_frame: world
+  lidar_frame: lidar
+
+  scan_rate: 10.0             # revolutions per second [Hz]
+  num_azimuth_steps: 1800     # firings per revolution (0.2 deg resolution)
+  num_rings: 16
+  min_elevation_deg: -22.5    # elevation of ring 0
+  max_elevation_deg: 19.6875  # elevation of the last ring (rings are evenly spaced)
+  min_range: 1.0
+  max_range: 100.0
+  intensity: 60.0             # intensity reported for every return
+  num_threads: 8
+
+  # Sensor pose used until the first message arrives on lidar_odom_gt.
+  initial_position: [0.0, 0.0, 2.0]
+  initial_rpy_deg: [0.0, 0.0, 0.0]
+
+# Kinematic body moving the LiDAR along a circle.
+sim_motion:
+  world_frame: world
+  lidar_frame: lidar
+  update_rate: 50.0
+  gravity: 9.81
+
+  start_delay: 10.0           # the body stays still for this long before tracking starts
+  initial_position: [0.0, 20.0, 4.0]
+  initial_rpy_deg: [0.0, 0.0, 0.0]
+  lidar_mount_rpy_deg: [0.0, 0.0, 0.0]
+
+  # p(t) = center + radius * (cos(w t) * first_axis + sin(w t) * second_axis)
+  trajectory:
+    center: [-12.0, 0.0, 7.0]
+    radius: 6.0
+    angular_speed: 0.4        # w [rad/s]
+    first_axis: [0.0, 1.0, 0.0]
+    second_axis: [0.0, 0.0, 1.0]
+
+  # acceleration = velocity_gain * (v_ref + position_gain * (p_ref - p) - v)
+  tracking:
+    position_gain: 0.2
+    velocity_gain: 0.4
+
+  lidar_marker:
+    scale: [0.8, 0.8, 0.35]
+    color: [0.3, 0.3, 1.0, 0.5]   # r, g, b, a
+
+# Quadrotor carrying the LiDAR through a waypoint mission.
+sim_drone:
+  world_frame: world
+  lidar_frame: lidar
+  drone_frame: drone
+  update_rate: 50.0
+  gravity: 9.81
+  drag_coefficient: 0.1       # linear drag per unit mass [1/s]
+
+  hover_duration: 10.0        # the drone hovers in place for this long before the mission starts
+  min_attitude_control_altitude: 5.0   # below this altitude the attitude is frozen (vertical climb)
+  initial_position: [0.0, 0.0, 2.0]
+  initial_rpy_deg: [0.0, 0.0, 0.0]
+  lidar_mount_rpy_deg: [15.0, 15.0, 0.0]   # LiDAR orientation relative to the drone body
+
+  # Speed command towards the waypoint: cruise_speed * (2 / pi) * atan(distance_gain * distance)
+  controller:
+    cruise_speed: 1.6666667
+    distance_gain: 1.0
+    velocity_gain: 1.5
+    attitude_gain: 3.0
+    max_thrust_to_weight: 1.3
+    max_yaw_rate: 0.3         # [rad/s]
+
+  # Each waypoint becomes the target once the mission time exceeds its `time` [s].
+  waypoints:
+    - {time: 0.0,  position: [-10.0, 10.0, 10.0], yaw_deg: -90.0}
+    - {time: 22.5, position: [-15.0, 10.0, 10.0], yaw_deg: 0.0}
+    - {time: 37.5, position: [-15.0, 15.0, 10.0], yaw_deg: 0.0}
+    - {time: 52.5, position: [-35.0, 15.0, 10.0], yaw_deg: 0.0}
+    - {time: 67.5, position: [-45.0, 15.0, 7.0],  yaw_deg: 0.0}
+    - {time: 82.5, position: [-45.0, 15.0, 14.0], yaw_deg: 0.0}
+    - {time: 97.5, position: [-45.0, -15.0, 14.0], yaw_deg: 0.0}
+
+  lidar_marker:
+    scale: [0.8, 0.8, 0.35]
+    color: [0.3, 0.3, 1.0, 0.5]
+  setpoint_marker:
+    scale: [0.4, 0.4, 0.4]
+    color: [1.0, 0.0, 0.0, 0.7]

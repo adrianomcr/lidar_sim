@@ -4,6 +4,9 @@ FROM ros:noetic-ros-base-focal
 # Set environment variables for non-interactive installation
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Skip the ROS Noetic end-of-life dialog that RViz shows at startup
+ENV DISABLE_ROS1_EOL_WARNINGS=1
+
 # Update and install necessary tools
 RUN apt-get update && apt-get install -y \
     git \
@@ -11,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     pkg-config \
     libeigen3-dev \
+    libyaml-cpp-dev \
+    python3-yaml \
     python3-pip \
     python3-catkin-tools \
     ros-noetic-rviz \
