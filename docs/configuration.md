@@ -160,6 +160,39 @@ The controller symbols are explained in [Motion models](motion_models.md#control
 | --- | --- | --- | --- |
 | `num_samples` | int | 15 | Points printed per cloud |
 
+## Standalone viewer
+
+`lidar_sim_viewer` is the same simulation without ROS or RViz. It is built by the plain CMake
+flow in the [README](../README.md) (`-DLIDAR_SIM_WITH_ROS=OFF`) and also by `catkin build` when
+Qt 5 or Qt 6 is installed.
+
+```bash
+lidar_sim_viewer
+lidar_sim_viewer --world my_world.yaml --params my_params.yaml
+```
+
+| Control | What it does |
+| --- | --- |
+| World / Params | Paths of the two YAML files. Browse opens a file dialog |
+| Reload | Read the path currently in the box |
+| LiDAR | `sim_lidar` block: rate, resolution, elevation, range, threads, static pose |
+| Motion | Static pose, Circle (`sim_motion`) or Drone (`sim_drone`) |
+| Waypoints | Drone mission. Times must increase |
+| Apply | Rebuild the scanner and the motion model from the form. The file is not written |
+| Save | Write `params.yaml` (frame names and RViz marker styles are kept) and apply it |
+| Play / Pause / Reset | Integrate the circle or the drone. Reset returns to `t = 0` |
+| Speed | 0.5x to 20x. The drone mission is about 100 s at 1x |
+| World, Points, Sensor, Path, Wire | Toggle the mesh, the cloud, the sensor axes, the trajectory and a wireframe |
+| Left drag / right drag / wheel | Orbit, pan, zoom. `F` frames the scene |
+
+Planes are drawn translucent. Planes and cylinders are infinite in the simulation; the viewer
+draws a plane across the rest of the scene and a cylinder only where its axis crosses that
+scene, then applies the plane constraints. The point cloud is the real ray cast, so a return
+lies on the mathematical surface even where the drawn mesh is only an approximation.
+
+`lidar_sim_viewer --check` loads both files, tessellates the world, computes one scan and exits.
+It is a smoke test for a machine without a display.
+
 ## Launch file
 
 `launch/example.launch` loads the parameters, starts `sim_lidar`, one motion node and RViz.

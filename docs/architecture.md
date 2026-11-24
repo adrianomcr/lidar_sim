@@ -2,26 +2,34 @@
 
 ## Overview
 
-The package is split in two libraries and a few thin executables:
+The package is split in two libraries, the ROS nodes, and a desktop viewer that does not need ROS:
 
 - **`lidar_sim_core`**: the simulation itself. It depends only on Eigen, yaml-cpp and the
   standard library, so it can be used from any C++ program, test or tool without ROS.
+  `loadSimulationConfig()` reads `config/params.yaml` into that same library.
 - **`lidar_sim_ros`**: ROS wrappers around the core. It reads parameters, converts core types to
-  ROS messages and runs the publish loops.
+  ROS messages and runs the publish loops. Built only when catkin is available.
 - **Executables** (`src/nodes/`): `sim_lidar`, `sim_motion` and `sim_drone` only create a node
   object and call `run()`. `investigate` is a small standalone tool that prints cloud contents.
+- **`lidar_sim_viewer`** (`src/viewer/`): a Qt window. It loads the same YAML files, steps the
+  same simulators and draws the world and the point cloud with OpenGL. It needs Qt 5 or Qt 6,
+  not ROS.
 
 ```mermaid
 flowchart BT
-  core["lidar_sim_core<br/>geometry, world, LiDAR, motion"]
+  core["lidar_sim_core<br/>geometry, world, LiDAR, motion, params.yaml"]
   ros["lidar_sim_ros<br/>parameters, messages, nodes"]
   nodes["sim_lidar, sim_motion, sim_drone"]
+  viewer["lidar_sim_viewer<br/>Qt window"]
   eigen["Eigen, yaml-cpp, std::thread"]
   roscpp["roscpp, tf2_ros, messages"]
+  qt["Qt, OpenGL"]
   core --> eigen
   ros --> core
   ros --> roscpp
   nodes --> ros
+  viewer --> core
+  viewer --> qt
 ```
 
 ## Directory layout
@@ -37,12 +45,16 @@ lidar_sim/
 │   ├── motion/              RigidBodyState, IMU model, trajectories, controllers, simulators
 │   ├── ros/                 ROS nodes, parameter helpers, message conversions
 │   ├── lidar_scanner.h      LiDAR model
+│   ├── sim_config.h         loader and writer for params.yaml
 │   ├── world.h              scene container and world file loader
 │   └── math_utils.h         angle helpers
 ├── launch/example.launch    full simulation: LiDAR, motion model and RViz
 ├── rviz/config.rviz
 ├── scripts/create_world.py  world generator
-└── src/                     implementation, same layout as include/, plus nodes/ for the mains
+└── src/
+    ├── ...                  same layout as include/
+    ├── nodes/               ROS executables
+    └── viewer/              Qt viewer (scene mesh, OpenGL view, playback)
 ```
 
 ## Core library
@@ -191,7 +203,9 @@ The calling thread processes the first block itself. Motion nodes are single thr
 2. Add the source file to `lidar_sim_core` in `CMakeLists.txt`.
 3. Parse the new `type` in `makePrimitive()` in `src/world.cpp`.
 4. Add an `add_<type>()` method to `WorldBuilder` in `scripts/create_world.py`.
-5. Document the math in [primitives.md](primitives.md).
+5. Draw it in `buildSceneMesh()` in `src/viewer/scene_mesh.cpp`, or the standalone viewer will
+   load the world and then skip the new shape.
+6. Document the math in [primitives.md](primitives.md).
 
 For shapes that need more than two intersections (a torus has up to four), extend the
 `distances` buffer in `Primitive`.
@@ -208,6 +222,7 @@ For shapes that need more than two intersections (a torus has up to four), exten
 
 ### Using the core without ROS
 
-Link against `lidar_sim_core` (exported by `catkin_package`, built in `devel/lib`) and include
-the headers under `include/lidar_sim/`. The main [README](../README.md) has a complete example
-that loads a world and computes a scan.
+Link against `lidar_sim_core` and include the headers under `include/lidar_sim/`. With catkin the
+library is exported by `catkin_package` and built in `devel/lib`. Without ROS, the plain CMake
+build produces it next to `lidar_sim_viewer`. The main [README](../README.md) has a complete
+example that loads a world and computes a scan, and the viewer is that example with a window.

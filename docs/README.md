@@ -13,7 +13,7 @@ quadrotor flying waypoints, move the sensor around and publish IMU data and grou
 | [Plane constraints](constraints.md) | Math of the constraints that cut primitives, with recipes |
 | [LiDAR model](lidar_model.md) | Beam layout, scan timing, range gating and the point cloud format |
 | [Motion models](motion_models.md) | Rigid body integration, IMU model, circle tracking and quadrotor control |
-| [Configuration](configuration.md) | World file format, parameter reference, launch arguments, world generator |
+| [Configuration](configuration.md) | World file, parameters, the standalone viewer, launch arguments, world generator |
 | [ROS interface](ros_interface.md) | Nodes, topics, frames and TF |
 
 New to the code? Read [Architecture](architecture.md) first, then [Conventions](conventions.md).

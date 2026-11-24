@@ -29,8 +29,8 @@ docker compose -f docker-compose.yaml run --rm lidar_sim bash
 ```
 
 
-## Native setup
-Requires ROS Noetic, Eigen 3 and yaml-cpp (`sudo apt install libeigen3-dev libyaml-cpp-dev python3-yaml`).
+## Native setup with ROS
+Requires ROS Noetic (Ubuntu 20.04), Eigen 3 and yaml-cpp (`sudo apt install libeigen3-dev libyaml-cpp-dev python3-yaml`).
 ```bash
 mkdir -p ~/simulation_ws/src
 cd ~/simulation_ws/src
@@ -40,8 +40,30 @@ catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release
 source devel/setup.bash
 ```
 
+## Standalone viewer (no ROS)
+Ubuntu 22.04 and 24.04 have no ROS 1 packages. The viewer builds with plain CMake and only needs Eigen, yaml-cpp and Qt 6 (Qt 5 works too):
+
+```bash
+sudo apt install build-essential cmake pkg-config libeigen3-dev libyaml-cpp-dev \
+  qt6-base-dev libgl1-mesa-dev
+cd lidar_sim
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DLIDAR_SIM_WITH_ROS=OFF
+cmake --build build -j
+./build/lidar_sim_viewer
+```
+
+`lidar_sim_viewer` reads `config/params.yaml` and `config/world.yaml`. The side panel edits the same parameters the ROS nodes use, and Save writes them back to the parameter file. Browse picks another world file. Play runs the circle (`sim_motion`) or the drone mission (`sim_drone`); the speed box is 1x by default. Left drag orbits the view, right drag pans, the wheel zooms.
+
+```bash
+./build/lidar_sim_viewer --world my_world.yaml --params my_params.yaml
+./build/lidar_sim_viewer --check    # load, tessellate and compute one scan, then exit
+```
+
+If a ROS workspace is already sourced, pass `-DLIDAR_SIM_WITH_ROS=OFF` or the configure step will look for catkin. On a machine with ROS Noetic and Qt, `catkin build` builds the nodes and the viewer.
+
 
 ## Use it
+Without ROS, run `./build/lidar_sim_viewer` (see above). With ROS:
 ```bash
 roslaunch lidar_sim example.launch
 ```
@@ -119,7 +141,7 @@ and the [ROS interface](docs/ros_interface.md).
 
 ## About the software
 
-The package is split in two libraries:
+The package is split in two libraries, plus a Qt viewer that does not need ROS:
 
 - `lidar_sim_core` has no ROS dependency. It contains the primitives and constraints
   (`include/lidar_sim/geometry`), the `World` and its YAML loader, the `LidarScanner`, and the
@@ -127,6 +149,7 @@ The package is split in two libraries:
   `DroneSimulator` (quadrotor controller and waypoint mission).
 - `lidar_sim_ros` wraps the core in ROS nodes (`include/lidar_sim/ros`): parameter loading,
   message conversions and the node classes used by the executables in `src/nodes`.
+- `lidar_sim_viewer` (`src/viewer`) is the Qt window described above. It links only the core.
 
 The LiDAR can therefore be simulated without ROS:
 
