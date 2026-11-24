@@ -36,10 +36,10 @@ struct SimulationConfig {
     std::string world_frame = "world";
     std::string lidar_frame = "lidar";
     double scan_rate = 10.0;
-    int num_azimuth_steps = 1800;
-    int num_rings = 16;
-    double min_elevation_deg = -22.5;
-    double max_elevation_deg = 19.6875;
+    int num_azimuth_steps = 1024;
+    int num_rings = 64;
+    double min_elevation_deg = -45.0;
+    double max_elevation_deg = 45.0;
     double min_range = 1.0;
     double max_range = 100.0;
     double intensity = 60.0;
@@ -59,9 +59,8 @@ struct SimulationConfig {
     Eigen::Vector3d lidar_mount_rpy_deg = Eigen::Vector3d::Zero();
     Eigen::Vector3d trajectory_center = Eigen::Vector3d::Zero();
     double trajectory_radius = 1.0;
-    double trajectory_angular_speed = 0.0;
-    Eigen::Vector3d trajectory_first_axis = Eigen::Vector3d::UnitY();
-    Eigen::Vector3d trajectory_second_axis = Eigen::Vector3d::UnitZ();
+    double trajectory_linear_speed = 0.0;  ///< Tangential speed [m/s]. Divided by the radius for rad/s.
+    Eigen::Vector3d trajectory_normal = Eigen::Vector3d::UnitZ();  ///< (0, 0, 1) is parallel to xy.
     double position_gain = 0.0;
     double velocity_gain = 0.0;
     MarkerStyle lidar_marker;

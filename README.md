@@ -47,12 +47,13 @@ Ubuntu 22.04 and 24.04 have no ROS 1 packages. The viewer builds with plain CMak
 sudo apt install build-essential cmake pkg-config libeigen3-dev libyaml-cpp-dev \
   qt6-base-dev libgl1-mesa-dev
 cd lidar_sim
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DLIDAR_SIM_WITH_ROS=OFF
-cmake --build build -j
+./build.sh
 ./build/lidar_sim_viewer
 ```
 
-`lidar_sim_viewer` reads `config/params.yaml` and `config/world.yaml`. The side panel edits the same parameters the ROS nodes use, and Save writes them back to the parameter file. Browse picks another world file. Play runs the circle (`sim_motion`) or the drone mission (`sim_drone`); the speed box is 1x by default. Left drag orbits the view, right drag pans, the wheel zooms.
+Run the viewer from the `lidar_sim` directory. It opens `config/params.yaml` in the current directory when that file exists. `./build.sh ros` is the catkin build, for a sourced Noetic workspace.
+
+`lidar_sim_viewer` reads `config/params.yaml` and `config/world.yaml`. The side panel edits the same parameters the ROS nodes use, and Save writes them back to the parameter file. Browse picks another world file. Play runs the circle (`sim_motion`) or the drone mission (`sim_drone`); the speed box is 1x by default. Decay, next to the point-size slider, is how long returns stay on screen in simulation seconds (0 keeps the latest scan). Points are colored by world-frame height. Left drag orbits the view, right drag pans, the wheel zooms.
 
 ```bash
 ./build/lidar_sim_viewer --world my_world.yaml --params my_params.yaml
@@ -160,9 +161,10 @@ The LiDAR can therefore be simulated without ROS:
 lidar_sim::World world = lidar_sim::loadWorldFile("config/world.yaml");
 
 lidar_sim::LidarConfig config;
-config.num_rings = 16;
-config.min_elevation = -22.5 * M_PI / 180.0;
-config.max_elevation = 19.6875 * M_PI / 180.0;
+config.num_azimuth_steps = 1024;
+config.num_rings = 64;
+config.min_elevation = -45.0 * M_PI / 180.0;
+config.max_elevation = 45.0 * M_PI / 180.0;
 config.num_threads = 8;
 lidar_sim::LidarScanner scanner(config);
 

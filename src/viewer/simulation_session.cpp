@@ -39,44 +39,37 @@ void addCross(std::vector<float>& dst, const Eigen::Vector3d& center, double siz
           r, g, b);
 }
 
-void ringColor(int ring, int num_rings, float& r, float& g, float& b) {
-  const float hue =
-      num_rings <= 1 ? 0.0f : static_cast<float>(ring) / static_cast<float>(num_rings - 1);
-  const float chroma = 0.85f;
-  const float x = chroma * (1.0f - std::fabs(std::fmod(hue * 6.0f, 2.0f) - 1.0f));
-  const float m = 1.0f - chroma;
-  float red = 0.0f;
-  float green = 0.0f;
-  float blue = 0.0f;
-  switch (static_cast<int>(hue * 6.0f) % 6) {
-    case 0:
-      red = chroma;
-      green = x;
-      break;
-    case 1:
-      red = x;
-      green = chroma;
-      break;
-    case 2:
-      green = chroma;
-      blue = x;
-      break;
-    case 3:
-      green = x;
-      blue = chroma;
-      break;
-    case 4:
-      red = x;
-      blue = chroma;
-      break;
-    default:
-      red = chroma;
-      blue = x;
-      break;
+void heightColor(float z, bool ready, float z_min, float z_max, float fade, float& r, float& g,
+                 float& b) {
+  // Blue at the lowest world-frame height seen so far, red at the highest.
+  float t = 0.5f;
+  if (ready && z_max > z_min + 1e-4f) {
+    t = std::clamp((z - z_min) / (z_max - z_min), 0.0f, 1.0f);
   }
-  r = red + m;
-  g = green + m;
-  b = blue + m;
+  if (t < 0.25f) {
+    const float u = t / 0.25f;
+    r = 0.15f;
+    g = 0.25f + 0.55f * u;
+    b = 0.95f;
+  } else if (t < 0.5f) {
+    const float u = (t - 0.25f) / 0.25f;
+    r = 0.15f;
+    g = 0.80f + 0.15f * u;
+    b = 0.95f * (1.0f - u);
+  } else if (t < 0.75f) {
+    const float u = (t - 0.5f) / 0.25f;
+    r = 0.15f + 0.80f * u;
+    g = 0.95f;
+    b = 0.05f;
+  } else {
+    const float u = (t - 0.75f) / 0.25f;
+    r = 0.95f;
+    g = 0.95f * (1.0f - u) + 0.15f * u;
+    b = 0.05f * (1.0f - u);
+  }
+  r *= fade;
+  g *= fade;
+  b *= fade;
 }
 
 }  // namespace
@@ -112,12 +105,15 @@ void SimulationSession::start(const SimulationConfig& config, MotionMode mode,
   sim_time_ = 0.0;
   trail_.clear();
   returns_.clear();
+  scans_.clear();
+  z_ready_ = false;
+  applied_decay_ = -1.0;
   playing_ = false;
   reset_requested_ = false;
   stop_ = false;
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    published_.scanning = true;
+    published_.scanning = false;
     published_.error.clear();
     published_.sim_time = 0.0;
     published_.valid_points = 0;
@@ -140,11 +136,29 @@ void SimulationSession::setPlaying(bool playing) { playing_ = playing; }
 
 void SimulationSession::setSpeed(double speed) { speed_ = std::max(0.05, speed); }
 
+void SimulationSession::setPointDecay(double seconds) { point_decay_ = std::max(0.0, seconds); }
+
 void SimulationSession::resetTime() { reset_requested_ = true; }
 
-SimulationSession::Snapshot SimulationSession::snapshot() const {
+SimulationSession::Snapshot SimulationSession::snapshotFor(std::uint64_t point_revision,
+                                                           std::uint64_t line_revision) const {
   std::lock_guard<std::mutex> lock(mutex_);
-  return published_;
+  Snapshot snap;
+  snap.sim_time = published_.sim_time;
+  snap.scan_ms = published_.scan_ms;
+  snap.valid_points = published_.valid_points;
+  snap.scanning = published_.scanning;
+  snap.error = published_.error;
+  snap.point_revision = published_.point_revision;
+  snap.line_revision = published_.line_revision;
+  if (published_.point_revision != point_revision) {
+    snap.points = published_.points;
+  }
+  if (published_.line_revision != line_revision) {
+    snap.sensor_lines = published_.sensor_lines;
+    snap.path_lines = published_.path_lines;
+  }
+  return snap;
 }
 
 std::uint64_t SimulationSession::pointRevision() const {
@@ -170,11 +184,13 @@ void SimulationSession::threadMain() {
   double sim_anchor = 0.0;
 
   while (!stop_) {
+    refreshCloudIfDecayChanged();
     if (reset_requested_.exchange(false)) {
       try {
         rebuildMotion();
         sim_time_ = 0.0;
         trail_.clear();
+        scans_.clear();
         next_scan = 1.0 / std::max(config_.lidar.scan_rate, 1e-6);
         sim_anchor = 0.0;
         wall_anchor = Clock::now();
@@ -286,11 +302,92 @@ Eigen::Quaterniond SimulationSession::sensorOrientation() const {
                            degToRad(config_.lidar.initial_rpy_deg.z()));
 }
 
-void SimulationSession::scan() {
-  {
-    std::lock_guard<std::mutex> lock(mutex_);
-    published_.scanning = true;
+void SimulationSession::storeScan(const Eigen::Vector3d& position,
+                                  const Eigen::Quaterniond& orientation) {
+  StoredScan stored;
+  stored.time = sim_time_;
+  stored.xyz.reserve(returns_.size() * 3);
+  const Eigen::Matrix3d rotation = orientation.toRotationMatrix();
+  for (const LidarReturn& hit : returns_) {
+    if (!hit.valid) {
+      continue;
+    }
+    const Eigen::Vector3d world = rotation * hit.point + position;
+    const float z = static_cast<float>(world.z());
+    if (!z_ready_) {
+      z_min_ = z;
+      z_max_ = z;
+      z_ready_ = true;
+    } else {
+      z_min_ = std::min(z_min_, z);
+      z_max_ = std::max(z_max_, z);
+    }
+    stored.xyz.push_back(static_cast<float>(world.x()));
+    stored.xyz.push_back(static_cast<float>(world.y()));
+    stored.xyz.push_back(z);
   }
+  scans_.push_back(std::move(stored));
+}
+
+void SimulationSession::composePoints(std::vector<float>& points, int& count) {
+  const double decay = std::max(0.0, point_decay_.load());
+  const double now = sim_time_;
+  if (decay <= 0.0) {
+    while (scans_.size() > 1) {
+      scans_.pop_front();
+    }
+  } else {
+    while (!scans_.empty() && now - scans_.front().time >= decay) {
+      scans_.pop_front();
+    }
+  }
+
+  count = 0;
+  for (const StoredScan& scan : scans_) {
+    count += static_cast<int>(scan.xyz.size() / 3);
+  }
+  points.clear();
+  points.reserve(static_cast<std::size_t>(count) * 9);
+  for (const StoredScan& scan : scans_) {
+    float fade = 1.0f;
+    if (decay > 0.0) {
+      const double age = std::max(0.0, now - scan.time);
+      fade = static_cast<float>(std::clamp(1.0 - age / decay, 0.0, 1.0));
+    }
+    for (std::size_t i = 0; i + 2 < scan.xyz.size(); i += 3) {
+      float red = 1.0f;
+      float green = 1.0f;
+      float blue = 1.0f;
+      heightColor(scan.xyz[i + 2], z_ready_, z_min_, z_max_, fade, red, green, blue);
+      points.push_back(scan.xyz[i]);
+      points.push_back(scan.xyz[i + 1]);
+      points.push_back(scan.xyz[i + 2]);
+      points.push_back(0.0f);
+      points.push_back(0.0f);
+      points.push_back(1.0f);
+      points.push_back(red);
+      points.push_back(green);
+      points.push_back(blue);
+    }
+  }
+  applied_decay_ = decay;
+}
+
+void SimulationSession::refreshCloudIfDecayChanged() {
+  const double decay = std::max(0.0, point_decay_.load());
+  if (scans_.empty() || std::abs(decay - applied_decay_) <= 1e-9) {
+    return;
+  }
+  std::vector<float> points;
+  int count = 0;
+  composePoints(points, count);
+  std::lock_guard<std::mutex> lock(mutex_);
+  published_.points.swap(points);
+  published_.valid_points = count;
+  ++published_.point_revision;
+}
+
+void SimulationSession::scan() {
   const auto started = std::chrono::steady_clock::now();
   const Eigen::Vector3d position = sensorPosition();
   const Eigen::Quaterniond orientation = sensorOrientation().normalized();
@@ -298,21 +395,10 @@ void SimulationSession::scan() {
   const double scan_ms =
       std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started).count();
 
+  storeScan(position, orientation);
   std::vector<float> points;
-  points.reserve(returns_.size() * 9);
-  int valid = 0;
-  const int rings = std::max(1, config_.lidar.num_rings);
-  for (const LidarReturn& hit : returns_) {
-    if (!hit.valid) {
-      continue;
-    }
-    ++valid;
-    float red = 1.0f;
-    float green = 1.0f;
-    float blue = 1.0f;
-    ringColor(static_cast<int>(hit.ring), rings, red, green, blue);
-    pushVertex(points, orientation * hit.point + position, red, green, blue);
-  }
+  int count = 0;
+  composePoints(points, count);
   rememberTrail(position);
   std::vector<float> sensor_lines = makeSensorLines(position, orientation);
   std::vector<float> path_lines = makePathLines(position);
@@ -323,7 +409,7 @@ void SimulationSession::scan() {
   published_.path_lines.swap(path_lines);
   published_.sim_time = sim_time_;
   published_.scan_ms = scan_ms;
-  published_.valid_points = valid;
+  published_.valid_points = count;
   published_.scanning = false;
   published_.error.clear();
   ++published_.point_revision;
@@ -381,9 +467,10 @@ std::vector<float> SimulationSession::makePathLines(const Eigen::Vector3d& posit
   for (std::size_t i = 1; i < trail_.size(); ++i) {
     addLine(lines, trail_[i - 1], trail_[i], 0.95f, 0.78f, 0.20f);
   }
-  if (circle_ && std::abs(config_.motion.trajectory_angular_speed) > 1e-6) {
-    const double period =
-        2.0 * M_PI / std::abs(config_.motion.trajectory_angular_speed);
+  const double radius = config_.motion.trajectory_radius;
+  const double linear_speed = config_.motion.trajectory_linear_speed;
+  if (circle_ && std::abs(linear_speed) > 1e-6 && std::abs(radius) > 1e-9) {
+    const double period = 2.0 * M_PI * std::abs(radius / linear_speed);
     Eigen::Vector3d previous = circle_->position(0.0);
     for (int i = 1; i <= 96; ++i) {
       const Eigen::Vector3d point = circle_->position(period * i / 96.0);

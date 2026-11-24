@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -55,10 +56,15 @@ class SimulationSession {
   void stop();
   void setPlaying(bool playing);
   void setSpeed(double speed);
+  /// How long a return stays in the displayed cloud, in simulation seconds.
+  /// Zero keeps only the latest revolution. Older returns fade, then drop.
+  void setPointDecay(double seconds);
   void resetTime();
   bool playing() const { return playing_.load(); }
 
-  Snapshot snapshot() const;
+  /// Copies the latest numbers. The point and line buffers are copied only when their revision
+  /// differs from the revision the caller already drew.
+  Snapshot snapshotFor(std::uint64_t point_revision, std::uint64_t line_revision) const;
   std::uint64_t pointRevision() const;
   int validPoints() const;
 
@@ -68,6 +74,9 @@ class SimulationSession {
   void scan();
   void publishLines();
   void setError(const std::string& message);
+  void storeScan(const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation);
+  void composePoints(std::vector<float>& points, int& count);
+  void refreshCloudIfDecayChanged();
   void stepMotion(double dt);
   void rememberTrail(const Eigen::Vector3d& position);
   Eigen::Vector3d sensorPosition() const;
@@ -87,12 +96,23 @@ class SimulationSession {
   std::vector<Eigen::Vector3d> trail_;
   std::vector<LidarReturn> returns_;
 
+  struct StoredScan {
+    double time = 0.0;
+    std::vector<float> xyz;  ///< World-frame positions, three floats per return.
+  };
+  std::deque<StoredScan> scans_;
+  bool z_ready_ = false;
+  float z_min_ = 0.0f;  ///< World-frame height range used to color the cloud.
+  float z_max_ = 0.0f;
+  double applied_decay_ = -1.0;
+
   mutable std::mutex mutex_;
   Snapshot published_;
   std::atomic<bool> stop_{false};
   std::atomic<bool> playing_{false};
   std::atomic<bool> reset_requested_{false};
   std::atomic<double> speed_{1.0};
+  std::atomic<double> point_decay_{0.0};
   std::thread thread_;
 };
 

@@ -51,18 +51,22 @@ combines the new orientation with the rates and forces applied during the step.
 
 ### Reference trajectory
 
-`CircularTrajectory` describes a circle of radius $\rho$ around $c$, in the plane spanned by two
-orthogonal unit axes $u_1$, $u_2$, traveled at the angular speed $\Omega$:
+`CircularTrajectory` is a circle of radius $\rho$ around $c$. The parameter file gives the
+tangential speed $v$ and one normal $n$ of the plane. The angular speed is $\Omega = v / \rho$
+when $\rho \neq 0$, and zero when the radius is zero. Positive $v$ travels by the right-hand rule
+about $n$. The simulator builds two orthogonal unit axes in that plane so that
+$u_1 \times u_2$ points along $n$. For $n = (0, 0, 1)$ those axes are $\hat x$ and $\hat y$,
+and the circle is parallel to the $xy$ plane:
 
 ```math
 p_r(t) = c + \rho\left(\cos(\Omega t)\, u_1 + \sin(\Omega t)\, u_2\right), \qquad
 v_r(t) = \rho\,\Omega\left(-\sin(\Omega t)\, u_1 + \cos(\Omega t)\, u_2\right).
 ```
 
-The axes are normalized when the trajectory is built, and it throws if they are zero or not
-orthogonal. With the defaults ($c = (-12, 0, 7)$, $\rho = 6$, $\Omega = 0.4$ rad/s,
-$u_1 = \hat y$, $u_2 = \hat z$) the circle is vertical, in the plane $x = -12$, with a period of
-15.7 s and a speed of 2.4 m/s.
+The axes are normalized when the trajectory is built, and it throws if the normal is zero or the
+axes are not orthogonal. With the defaults ($c = (-12, 0, 7)$, $\rho = 6$, $v = 2.4$ m/s,
+$n = \hat x$) the circle is vertical, in the plane $x = -12$. Then $\Omega = 0.4$ rad/s, the
+period is 15.7 s and the speed is 2.4 m/s.
 
 ### Tracking law
 

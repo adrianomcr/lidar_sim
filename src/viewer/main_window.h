@@ -76,6 +76,7 @@ class MainWindow : public QMainWindow {
   QPushButton* pause_button_ = nullptr;
   QComboBox* speed_ = nullptr;
   QSlider* point_size_ = nullptr;
+  QDoubleSpinBox* point_decay_ = nullptr;
   QTableWidget* waypoints_ = nullptr;
 
   QDoubleSpinBox* scan_rate_ = nullptr;
@@ -110,13 +111,10 @@ class MainWindow : public QMainWindow {
   QDoubleSpinBox* circle_y_ = nullptr;
   QDoubleSpinBox* circle_z_ = nullptr;
   QDoubleSpinBox* circle_radius_ = nullptr;
-  QDoubleSpinBox* circle_speed_ = nullptr;
-  QDoubleSpinBox* axis1_x_ = nullptr;
-  QDoubleSpinBox* axis1_y_ = nullptr;
-  QDoubleSpinBox* axis1_z_ = nullptr;
-  QDoubleSpinBox* axis2_x_ = nullptr;
-  QDoubleSpinBox* axis2_y_ = nullptr;
-  QDoubleSpinBox* axis2_z_ = nullptr;
+  QDoubleSpinBox* circle_linear_speed_ = nullptr;
+  QDoubleSpinBox* circle_normal_x_ = nullptr;
+  QDoubleSpinBox* circle_normal_y_ = nullptr;
+  QDoubleSpinBox* circle_normal_z_ = nullptr;
   QDoubleSpinBox* position_gain_ = nullptr;
   QDoubleSpinBox* velocity_gain_ = nullptr;
 

@@ -8,6 +8,8 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <Eigen/Geometry>
+
 #include "lidar_sim/math_utils.h"
 
 namespace lidar_sim {
@@ -157,6 +159,41 @@ void writeMarker(std::ostream& out, const std::string& indent, const std::string
   out << indent << "  color: " << formatVector(marker.color) << "\n";
 }
 
+bool hasKey(const YAML::Node& node, const char* key) {
+  const YAML::Node child = node[key];
+  return child && !child.IsNull();
+}
+
+// The circle used to be two axes plus an angular speed. A file from before that change still loads:
+// linear_speed = angular_speed * radius, and the normal is first_axis × second_axis.
+void readTrajectory(const YAML::Node& trajectory, SimulationConfig::Motion& motion) {
+  const std::string path = "sim_motion/trajectory/";
+  motion.trajectory_center = readVector3(trajectory, "center", path);
+  motion.trajectory_radius = readDouble(trajectory, "radius", path);
+  if (hasKey(trajectory, "linear_speed") && hasKey(trajectory, "normal")) {
+    motion.trajectory_linear_speed = readDouble(trajectory, "linear_speed", path);
+    motion.trajectory_normal = readVector3(trajectory, "normal", path);
+    return;
+  }
+  if (hasKey(trajectory, "angular_speed") && hasKey(trajectory, "first_axis") &&
+      hasKey(trajectory, "second_axis")) {
+    const double angular_speed = readDouble(trajectory, "angular_speed", path);
+    const Eigen::Vector3d first_axis = readVector3(trajectory, "first_axis", path);
+    const Eigen::Vector3d second_axis = readVector3(trajectory, "second_axis", path);
+    const Eigen::Vector3d normal = first_axis.cross(second_axis);
+    if (normal.norm() == 0.0) {
+      throw std::runtime_error(
+          "sim_motion/trajectory first_axis and second_axis must not be parallel");
+    }
+    motion.trajectory_linear_speed = angular_speed * motion.trajectory_radius;
+    motion.trajectory_normal = normal;
+    return;
+  }
+  throw std::runtime_error(
+      "sim_motion/trajectory needs linear_speed and normal. An older file can instead give "
+      "angular_speed, first_axis and second_axis");
+}
+
 }  // namespace
 
 LidarConfig SimulationConfig::lidarConfig() const {
@@ -184,9 +221,10 @@ MotionSimulator::Config SimulationConfig::motionConfig() const {
   config.lidar_mount = rpyDegrees(motion.lidar_mount_rpy_deg);
   config.trajectory.center = motion.trajectory_center;
   config.trajectory.radius = motion.trajectory_radius;
-  config.trajectory.angular_speed = motion.trajectory_angular_speed;
-  config.trajectory.first_axis = motion.trajectory_first_axis;
-  config.trajectory.second_axis = motion.trajectory_second_axis;
+  config.trajectory.angular_speed =
+      angularSpeedFromLinear(motion.trajectory_linear_speed, motion.trajectory_radius);
+  circleAxesFromNormal(motion.trajectory_normal, config.trajectory.first_axis,
+                       config.trajectory.second_axis);
   return config;
 }
 
@@ -252,14 +290,7 @@ SimulationConfig loadSimulationConfig(const std::string& path) {
     config.motion.initial_rpy_deg = readVector3(motion, "initial_rpy_deg", "sim_motion/");
     config.motion.lidar_mount_rpy_deg = readVector3(motion, "lidar_mount_rpy_deg", "sim_motion/");
     const YAML::Node trajectory = requireMap(motion, "trajectory", "sim_motion/");
-    config.motion.trajectory_center = readVector3(trajectory, "center", "sim_motion/trajectory/");
-    config.motion.trajectory_radius = readDouble(trajectory, "radius", "sim_motion/trajectory/");
-    config.motion.trajectory_angular_speed =
-        readDouble(trajectory, "angular_speed", "sim_motion/trajectory/");
-    config.motion.trajectory_first_axis =
-        readVector3(trajectory, "first_axis", "sim_motion/trajectory/");
-    config.motion.trajectory_second_axis =
-        readVector3(trajectory, "second_axis", "sim_motion/trajectory/");
+    readTrajectory(trajectory, config.motion);
     const YAML::Node tracking = requireMap(motion, "tracking", "sim_motion/");
     config.motion.position_gain = readDouble(tracking, "position_gain", "sim_motion/tracking/");
     config.motion.velocity_gain = readDouble(tracking, "velocity_gain", "sim_motion/tracking/");
@@ -290,6 +321,8 @@ SimulationConfig loadSimulationConfig(const std::string& path) {
     config.drone.lidar_marker = readMarker(drone, "lidar_marker", "sim_drone/");
     config.drone.setpoint_marker = readMarker(drone, "setpoint_marker", "sim_drone/");
   } catch (const YAML::Exception& e) {
+    throw std::runtime_error("Invalid parameters '" + path + "': " + e.what());
+  } catch (const std::runtime_error& e) {
     throw std::runtime_error("Invalid parameters '" + path + "': " + e.what());
   }
   return config;
@@ -333,9 +366,8 @@ void saveSimulationConfig(const std::string& path, const SimulationConfig& confi
   out << "  trajectory:\n";
   out << "    center: " << formatVector(motion.trajectory_center) << "\n";
   out << "    radius: " << formatNumber(motion.trajectory_radius) << "\n";
-  out << "    angular_speed: " << formatNumber(motion.trajectory_angular_speed) << "\n";
-  out << "    first_axis: " << formatVector(motion.trajectory_first_axis) << "\n";
-  out << "    second_axis: " << formatVector(motion.trajectory_second_axis) << "\n\n";
+  out << "    linear_speed: " << formatNumber(motion.trajectory_linear_speed) << "\n";
+  out << "    normal: " << formatVector(motion.trajectory_normal) << "\n\n";
   out << "  tracking:\n";
   out << "    position_gain: " << formatNumber(motion.position_gain) << "\n";
   out << "    velocity_gain: " << formatNumber(motion.velocity_gain) << "\n\n";

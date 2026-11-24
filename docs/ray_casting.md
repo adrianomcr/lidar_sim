@@ -92,8 +92,8 @@ behind it: the beam produces no return instead of reaching farther surfaces, as 
 
 ## Cost and precision
 
-- A scan costs one ray-primitive test per beam, firing and object: with 1800 firings, 16 rings and
-  56 objects, about 1.6 million tests per revolution. There is no acceleration structure (BVH,
+- A scan costs one ray-primitive test per beam, firing and object: with 1024 firings, 64 rings and
+  56 objects, about 3.7 million tests per revolution. There is no acceleration structure (BVH,
   grid), which keeps the code simple for scenes of tens to a few hundreds of objects.
 - All geometry runs in double precision. The quadratic discriminant of a thin, distant cylinder is
   the small difference of two large numbers, and single precision there produces millimeter

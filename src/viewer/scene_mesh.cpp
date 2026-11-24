@@ -444,6 +444,9 @@ SceneMesh buildSceneMesh(const std::string& world_path) {
   Bounds drawn;
   MeshAccum opaque{&mesh.opaque_vertices, &mesh.opaque_indices, &drawn};
   MeshAccum planes{&mesh.plane_vertices, &mesh.plane_indices, &drawn};
+  // Display colors only; the world file does not store them. Planes are gray, or green-gray when
+  // a constraint cuts them. Cylinders stay blue-gray. Spheres and ellipsoids use a warm base that
+  // shifts a little with the object description, so neighboring parts of the airplane differ.
   for (const DrawObject& object : drawables) {
     if (object.type == "plane") {
       planes.rotation = object.rotation;

@@ -82,6 +82,11 @@ int runCheck(const std::string& world_path, const std::string& params_path) {
     check("max_elevation_deg", config.lidar.max_elevation_deg, again.lidar.max_elevation_deg);
     check("cruise_speed", config.drone.cruise_speed, again.drone.cruise_speed);
     check("radius", config.motion.trajectory_radius, again.motion.trajectory_radius);
+    check("linear_speed", config.motion.trajectory_linear_speed,
+          again.motion.trajectory_linear_speed);
+    check("normal_x", config.motion.trajectory_normal.x(), again.motion.trajectory_normal.x());
+    check("normal_y", config.motion.trajectory_normal.y(), again.motion.trajectory_normal.y());
+    check("normal_z", config.motion.trajectory_normal.z(), again.motion.trajectory_normal.z());
     check("marker_alpha", config.motion.lidar_marker.color.w(), again.motion.lidar_marker.color.w());
     if (config.lidar.num_rings != again.lidar.num_rings ||
         config.lidar.num_azimuth_steps != again.lidar.num_azimuth_steps ||

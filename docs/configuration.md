@@ -97,10 +97,10 @@ Angles ending in `_deg` are in degrees. Orientations use roll, pitch, yaw
 | `world_frame` | string | `world` | Parent frame of the published TF |
 | `lidar_frame` | string | `lidar` | Frame of the point cloud |
 | `scan_rate` | double | 10.0 | Revolutions per second [Hz] |
-| `num_azimuth_steps` | int | 1800 | Firings per revolution |
-| `num_rings` | int | 16 | Beams stacked in elevation |
-| `min_elevation_deg` | double | −22.5 | Elevation of ring 0 |
-| `max_elevation_deg` | double | 19.6875 | Elevation of the last ring |
+| `num_azimuth_steps` | int | 1024 | Firings per revolution |
+| `num_rings` | int | 64 | Beams stacked in elevation |
+| `min_elevation_deg` | double | −45 | Elevation of ring 0 |
+| `max_elevation_deg` | double | 45 | Elevation of the last ring |
 | `min_range`, `max_range` | double | 1.0, 100.0 | Valid range interval [m], exclusive |
 | `intensity` | double | 60.0 | Intensity of every return |
 | `num_threads` | int | 8 | Ray casting threads |
@@ -122,8 +122,10 @@ See [LiDAR model](lidar_model.md) for the meaning of the beam parameters.
 | `lidar_mount_rpy_deg` | double[3] | [0, 0, 0] | LiDAR orientation relative to the body |
 | `trajectory/center` | double[3] | [−12, 0, 7] | Circle center [m] |
 | `trajectory/radius` | double | 6.0 | [m] |
-| `trajectory/angular_speed` | double | 0.4 | [rad/s] |
-| `trajectory/first_axis`, `second_axis` | double[3] | [0, 1, 0], [0, 0, 1] | Orthogonal axes of the circle plane |
+| `trajectory/linear_speed` | double | 2.4 | Tangential speed [m/s]. Angular speed is this divided by the radius |
+| `trajectory/normal` | double[3] | [1, 0, 0] | Plane normal. `[0, 0, 1]` is parallel to the xy plane |
+
+An older file that still has `angular_speed`, `first_axis` and `second_axis` loads as well. The tangential speed is `angular_speed * radius`, and the normal is the cross product of the two axes. Saving the file from the viewer writes `linear_speed` and `normal`.
 | `tracking/position_gain` | double | 0.2 | $k_p$ [1/s] |
 | `tracking/velocity_gain` | double | 0.4 | $k_v$ [1/s] |
 | `lidar_marker/scale` | double[3] | [0.8, 0.8, 0.35] | Size of the LiDAR marker [m] |
@@ -182,8 +184,15 @@ lidar_sim_viewer --world my_world.yaml --params my_params.yaml
 | Save | Write `params.yaml` (frame names and RViz marker styles are kept) and apply it |
 | Play / Pause / Reset | Integrate the circle or the drone. Reset returns to `t = 0` |
 | Speed | 0.5x to 20x. The drone mission is about 100 s at 1x |
+| Decay | How long returns stay visible, in simulation seconds. 0 shows only the latest scan. Older points fade, then drop. This is not written to the parameter file |
+| Point size | Slider beside Decay |
 | World, Points, Sensor, Path, Wire | Toggle the mesh, the cloud, the sensor axes, the trajectory and a wireframe |
 | Left drag / right drag / wheel | Orbit, pan, zoom. `F` frames the scene |
+
+Returns are colored by world-frame height: blue at the lowest height seen since Apply, red at the
+highest. Mesh colors are display-only, chosen in `src/viewer/scene_mesh.cpp`. Planes are gray, or
+green-gray when a plane constraint cuts them. Cylinders are blue-gray. Spheres and ellipsoids use
+a warm color that shifts slightly with the object's description, so neighboring parts differ.
 
 Planes are drawn translucent. Planes and cylinders are infinite in the simulation; the viewer
 draws a plane across the rest of the scene and a cylinder only where its axis crosses that

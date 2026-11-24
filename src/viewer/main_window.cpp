@@ -152,6 +152,22 @@ void MainWindow::buildUi() {
   point_size_->setToolTip("Point size");
   toolbar->addWidget(point_size_);
 
+  point_decay_ = new DoubleBox(toolbar);
+  point_decay_->setRange(0.0, 600.0);
+  point_decay_->setDecimals(2);
+  point_decay_->setSingleStep(0.5);
+  point_decay_->setValue(0.0);
+  point_decay_->setSuffix(" s");
+  point_decay_->setSpecialValueText("latest");
+  point_decay_->setFixedWidth(88);
+  point_decay_->setToolTip(
+      "How long returns stay on screen, in simulation seconds. 0 (latest) keeps only the newest "
+      "scan. Older points fade, then disappear. Pause freezes the cloud.");
+  auto* decay_label = new QLabel("Decay", toolbar);
+  decay_label->setToolTip(point_decay_->toolTip());
+  toolbar->addWidget(decay_label);
+  toolbar->addWidget(point_decay_);
+
   auto* panel = new QWidget(this);
   auto* panel_layout = new QVBoxLayout(panel);
   panel_layout->setContentsMargins(8, 8, 8, 8);
@@ -233,9 +249,15 @@ void MainWindow::buildUi() {
             motion_mount_yaw_, -360.0, 360.0, " deg");
   addVector(circle_form, "Circle center", circle_x_, circle_y_, circle_z_, -10000.0, 10000.0, " m");
   circle_radius_ = addDouble(circle_form, "Radius", 0.0, 10000.0, " m");
-  circle_speed_ = addDouble(circle_form, "Angular speed", -50.0, 50.0, " rad/s");
-  addVector(circle_form, "First axis", axis1_x_, axis1_y_, axis1_z_, -10.0, 10.0, "");
-  addVector(circle_form, "Second axis", axis2_x_, axis2_y_, axis2_z_, -10.0, 10.0, "");
+  circle_linear_speed_ = addDouble(circle_form, "Linear speed", -500.0, 500.0, " m/s");
+  circle_linear_speed_->setToolTip(
+      "Tangential speed. Angular speed is this value divided by the radius, right-handed about "
+      "the normal.");
+  addVector(circle_form, "Normal", circle_normal_x_, circle_normal_y_, circle_normal_z_, -100.0,
+            100.0, "");
+  circle_normal_x_->setToolTip("Plane normal x. [0, 0, 1] is a circle parallel to xy.");
+  circle_normal_y_->setToolTip("Plane normal y. [0, 0, 1] is a circle parallel to xy.");
+  circle_normal_z_->setToolTip("Plane normal z. [0, 0, 1] is a circle parallel to xy.");
   position_gain_ = addDouble(circle_form, "Position gain", 0.0, 100.0, " 1/s");
   velocity_gain_ = addDouble(circle_form, "Velocity gain", 0.0, 100.0, " 1/s");
   stack->addWidget(circle_page);
@@ -314,6 +336,8 @@ void MainWindow::buildUi() {
   QObject::connect(point_size_, &QSlider::valueChanged, this, [this](int value) {
     view_->setPointSize(static_cast<float>(value));
   });
+  QObject::connect(point_decay_, qOverload<double>(&QDoubleSpinBox::valueChanged), this,
+                   [this](double value) { session_.setPointDecay(value); });
   QObject::connect(motion_mode_, qOverload<int>(&QComboBox::currentIndexChanged), this,
                    [this, stack](int index) {
                      stack->setCurrentIndex(index);
@@ -463,9 +487,8 @@ void MainWindow::fillForm(const SimulationConfig& config) {
   set3(motion_mount_roll_, motion_mount_pitch_, motion_mount_yaw_, config.motion.lidar_mount_rpy_deg);
   set3(circle_x_, circle_y_, circle_z_, config.motion.trajectory_center);
   set(circle_radius_, config.motion.trajectory_radius);
-  set(circle_speed_, config.motion.trajectory_angular_speed);
-  set3(axis1_x_, axis1_y_, axis1_z_, config.motion.trajectory_first_axis);
-  set3(axis2_x_, axis2_y_, axis2_z_, config.motion.trajectory_second_axis);
+  set(circle_linear_speed_, config.motion.trajectory_linear_speed);
+  set3(circle_normal_x_, circle_normal_y_, circle_normal_z_, config.motion.trajectory_normal);
   set(position_gain_, config.motion.position_gain);
   set(velocity_gain_, config.motion.velocity_gain);
 
@@ -518,9 +541,8 @@ SimulationConfig MainWindow::readForm() const {
       vec3(motion_mount_roll_, motion_mount_pitch_, motion_mount_yaw_);
   config.motion.trajectory_center = vec3(circle_x_, circle_y_, circle_z_);
   config.motion.trajectory_radius = circle_radius_->value();
-  config.motion.trajectory_angular_speed = circle_speed_->value();
-  config.motion.trajectory_first_axis = vec3(axis1_x_, axis1_y_, axis1_z_);
-  config.motion.trajectory_second_axis = vec3(axis2_x_, axis2_y_, axis2_z_);
+  config.motion.trajectory_linear_speed = circle_linear_speed_->value();
+  config.motion.trajectory_normal = vec3(circle_normal_x_, circle_normal_y_, circle_normal_z_);
   config.motion.position_gain = position_gain_->value();
   config.motion.velocity_gain = velocity_gain_->value();
 
@@ -767,7 +789,7 @@ void MainWindow::onTick() {
   if (!started_) {
     return;
   }
-  SimulationSession::Snapshot snap = session_.snapshot();
+  SimulationSession::Snapshot snap = session_.snapshotFor(point_revision_, line_revision_);
   if (snap.point_revision != point_revision_) {
     point_revision_ = snap.point_revision;
     view_->setPoints(std::move(snap.points));
@@ -796,7 +818,7 @@ void MainWindow::onTick() {
   } else if (running_mode_ == MotionMode::Drone) {
     mode = "drone";
   }
-  const QString state = snap.scanning ? "Scanning" : session_.playing() ? "Playing" : "Paused";
+  const QString state = session_.playing() ? "Playing" : "Paused";
   QString text = QString("%1 | %2 | t = %3 s | %4 points | scan %5 ms | %6 objects")
                      .arg(state)
                      .arg(mode)
