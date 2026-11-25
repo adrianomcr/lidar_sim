@@ -25,6 +25,7 @@ struct DrawObject {
   Eigen::Vector3d center = Eigen::Vector3d::Zero();
   Eigen::Matrix3d rotation = Eigen::Matrix3d::Identity();
   double radius = 1.0;
+  double slope = 1.0;
   Eigen::Vector3d size = Eigen::Vector3d::Ones();
   std::vector<HalfSpace> constraints;
 };
@@ -211,16 +212,18 @@ void addPlane(const DrawObject& object, const Bounds& scene, MeshAccum& mesh) {
   }
 }
 
-// The part of the cylinder axis that lies inside the scene box, in local z.
-bool axisInsideScene(const DrawObject& object, const Bounds& scene, double& zmin, double& zmax) {
+// Local-z interval of an axis-aligned tube or cone: the scene box, then tightened by constraints
+// whose normal is along the local z axis. Oblique cuts are applied later, per vertex.
+bool axisSpan(const DrawObject& object, const Bounds& scene, double& zmin, double& zmax) {
   const Eigen::Vector3d axis = object.rotation.col(2);
   zmin = -std::numeric_limits<double>::infinity();
   zmax = std::numeric_limits<double>::infinity();
+  bool missed = false;
   for (int axis_index = 0; axis_index < 3; ++axis_index) {
     if (std::abs(axis[axis_index]) < 1e-9) {
       if (object.center[axis_index] < scene.min[axis_index] ||
           object.center[axis_index] > scene.max[axis_index]) {
-        return false;
+        missed = true;
       }
       continue;
     }
@@ -232,20 +235,14 @@ bool axisInsideScene(const DrawObject& object, const Bounds& scene, double& zmin
     zmin = std::max(zmin, enter);
     zmax = std::min(zmax, leave);
   }
-  return zmin < zmax;
-}
-
-void addCylinder(const DrawObject& object, const Bounds& scene, MeshAccum& mesh) {
-  double zmin = 0.0;
-  double zmax = 0.0;
-  if (!axisInsideScene(object, scene, zmin, zmax) || zmax - zmin < 1e-3) {
+  // A default segment keeps a shape visible when its axis misses the scene box.
+  if (missed || !(zmin < zmax) || zmax - zmin < 1e-3) {
     zmin = -5.0;
     zmax = 5.0;
   }
   zmin -= 0.02;
   zmax += 0.02;
 
-  // Constraints parallel to the axis set the finite length. Oblique cuts stay on the vertices.
   for (const HalfSpace& constraint : object.constraints) {
     if (constraint.normal.head<2>().norm() > 1e-8 || std::abs(constraint.normal.z()) < 1e-12) {
       continue;
@@ -257,7 +254,13 @@ void addCylinder(const DrawObject& object, const Bounds& scene, MeshAccum& mesh)
       zmax = std::min(zmax, limit);
     }
   }
-  if (zmax - zmin < 1e-4) {
+  return zmax - zmin >= 1e-4;
+}
+
+void addCylinder(const DrawObject& object, const Bounds& scene, MeshAccum& mesh) {
+  double zmin = 0.0;
+  double zmax = 0.0;
+  if (!axisSpan(object, scene, zmin, zmax)) {
     return;
   }
 
@@ -279,6 +282,56 @@ void addCylinder(const DrawObject& object, const Bounds& scene, MeshAccum& mesh)
         continue;
       }
       ids[at(stack, slice)] = mesh.add(local, Eigen::Vector3d(c, s, 0.0));
+    }
+  }
+  for (int stack = 0; stack < stacks; ++stack) {
+    for (int slice = 0; slice < slices; ++slice) {
+      const int a = ids[at(stack, slice)];
+      const int b = ids[at(stack, slice + 1)];
+      const int c = ids[at(stack + 1, slice)];
+      const int d = ids[at(stack + 1, slice + 1)];
+      mesh.triangle(a, b, d);
+      mesh.triangle(a, d, c);
+    }
+  }
+}
+
+void addCone(const DrawObject& object, const Bounds& scene, MeshAccum& mesh) {
+  double zmin = 0.0;
+  double zmax = 0.0;
+  if (!axisSpan(object, scene, zmin, zmax)) {
+    return;
+  }
+
+  const double slope = object.slope;
+  const double slope_squared = slope * slope;
+  const double length = zmax - zmin;
+  const int slices = 28;
+  const int stacks = std::max(8, std::min(64, static_cast<int>(std::ceil(length / 0.2))));
+  std::vector<int> ids(static_cast<std::size_t>(stacks + 1) * slices, -1);
+  auto at = [&](int stack, int slice) {
+    return static_cast<std::size_t>(stack * slices + (slice % slices));
+  };
+  for (int stack = 0; stack <= stacks; ++stack) {
+    const double z = zmin + length * stack / stacks;
+    const double radius = slope * std::abs(z);
+    if (radius < 1e-8) {
+      const Eigen::Vector3d apex_normal(0.0, 0.0, z >= 0.0 ? 1.0 : -1.0);
+      const int apex = mesh.add(Eigen::Vector3d(0.0, 0.0, z), apex_normal);
+      for (int slice = 0; slice < slices; ++slice) {
+        ids[at(stack, slice)] = apex;
+      }
+      continue;
+    }
+    for (int slice = 0; slice < slices; ++slice) {
+      const double theta = 2.0 * M_PI * slice / slices;
+      const double c = std::cos(theta);
+      const double s = std::sin(theta);
+      const Eigen::Vector3d local(radius * c, radius * s, z);
+      if (!contains(object.constraints, local)) {
+        continue;
+      }
+      ids[at(stack, slice)] = mesh.add(local, Eigen::Vector3d(local.x(), local.y(), -slope_squared * z));
     }
   }
   for (int stack = 0; stack < stacks; ++stack) {
@@ -409,6 +462,8 @@ SceneMesh buildSceneMesh(const std::string& world_path) {
       }
       if (object.type == "sphere" || object.type == "cylinder") {
         object.radius = readPositive(node, "radius");
+      } else if (object.type == "cone") {
+        object.slope = readPositive(node, "slope");
       } else if (object.type == "ellipsoid") {
         object.size = readVector3(node, "size");
         if ((object.size.array() <= 0.0).any()) {
@@ -445,8 +500,8 @@ SceneMesh buildSceneMesh(const std::string& world_path) {
   MeshAccum opaque{&mesh.opaque_vertices, &mesh.opaque_indices, &drawn};
   MeshAccum planes{&mesh.plane_vertices, &mesh.plane_indices, &drawn};
   // Display colors only; the world file does not store them. Planes are gray, or green-gray when
-  // a constraint cuts them. Cylinders stay blue-gray. Spheres and ellipsoids use a warm base that
-  // shifts a little with the object description, so neighboring parts of the airplane differ.
+  // a constraint cuts them. Cylinders stay blue-gray and cones a muted purple. Spheres and
+  // ellipsoids use a warm base that shifts a little with the object description.
   for (const DrawObject& object : drawables) {
     if (object.type == "plane") {
       planes.rotation = object.rotation;
@@ -466,6 +521,9 @@ SceneMesh buildSceneMesh(const std::string& world_path) {
       } else if (object.type == "cylinder") {
         opaque.color = hashColor(object.description, Eigen::Vector3f(0.42f, 0.52f, 0.60f));
         addCylinder(object, scene, opaque);
+      } else if (object.type == "cone") {
+        opaque.color = hashColor(object.description, Eigen::Vector3f(0.55f, 0.46f, 0.68f));
+        addCone(object, scene, opaque);
       }
     }
   }

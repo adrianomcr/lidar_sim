@@ -104,7 +104,7 @@ The scene is a list of objects, each one a geometric primitive:
 
 ```yaml
 objects:
-- type: cylinder                 # plane, sphere, cylinder or ellipsoid
+- type: cylinder                 # plane, sphere, cylinder, cone or ellipsoid
   description: Cylinder with plane constraint
   center: [-5, 12, 9]            # [m]
   angles: [1.57, 0, 0]           # roll, pitch, yaw [rad], optional
@@ -118,7 +118,8 @@ objects:
   size: [28, 4, 4]               # semi-axes along the local x, y and z axes [m]
 ```
 
-Planes and cylinders are infinite: the plane normal and the cylinder axis are the local z axis.
+Planes, cylinders and cones are infinite: the plane normal and the cylinder or cone axis are the
+local z axis. A cone uses `slope` $k$, with local radius $k\lvert z \rvert$.
 A plane constraint keeps only the part of the primitive where `normal . (p - point) > 0`, with `p`
 expressed in the local frame of the primitive. This is how the finite cylinders and the open
 ellipsoids of the example scene are built.

@@ -1,7 +1,8 @@
 # Plane constraints
 
-Primitives are infinite (planes, cylinders) or closed (spheres, ellipsoids). Plane constraints cut
-them into finite or open pieces: a tube, a square panel, a dome, an engine intake.
+Primitives are infinite (planes, cylinders, cones) or closed (spheres, ellipsoids). Plane
+constraints cut them into finite or open pieces: a tube, a cone, a square panel, a dome, an
+engine intake.
 
 ## Definition
 
@@ -103,6 +104,17 @@ $z > 0$.
 
 **Half pipe along the local z axis** (cylinder): `{normal: [0, -1, 0], point: [0, 0, 0]}` keeps
 the $y < 0$ half.
+
+**Finite cone of height $H$** (cone, apex at `center`, opening toward $+z$, base radius $k H$):
+
+```yaml
+plane_constraints:
+- {normal: [0, 0, 1], point: [0, 0, 0]}   # z > 0, the upper nappe
+- {normal: [0, 0, -1], point: [0, 0, H]}  # z < H
+```
+
+The base is open. Two cuts on the same side of the apex, such as $1 < z$ and $z < 3$, make a
+frustum.
 
 **Closing the end of a tube.** Constraints only remove surface. To close a tube of length $L$, add
 a plane with the same `angles`, centered at the end of the tube

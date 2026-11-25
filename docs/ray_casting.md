@@ -17,8 +17,8 @@ Because $d$ has unit length, the ray parameter $t$ of a hit is its distance from
 ## From the world to the primitive frame
 
 Each primitive is defined in a local frame with origin $c$ (`center`) and rotation $R$ (`angles`),
-where its shape has a simple equation: a plane is $z = 0$, a cylinder is $x^2 + y^2 = \rho^2$, and
-so on. Instead of transforming the shape, `Primitive::intersect()` transforms the ray:
+where its shape has a simple equation: a plane is $z = 0$, a cylinder is $x^2 + y^2 = \rho^2$,
+a cone is $x^2 + y^2 = k^2 z^2$, and so on. Instead of transforming the shape, `Primitive::intersect()` transforms the ray:
 
 ```math
 o' = R^\top (o - c), \qquad d' = R^\top d.
@@ -35,12 +35,14 @@ The subclass solves its shape in the local frame (`intersectLocal()`) and return
 parameters where the ray meets the surface, in ascending order:
 
 - Plane: at most one candidate.
-- Sphere, cylinder, ellipsoid: the real roots $t_1 \le t_2$ of a quadratic
+- Sphere, cylinder, cone, ellipsoid: the real roots $t_1 \le t_2$ of a quadratic
   $a t^2 + b t + c = 0$, solved by `Primitive::solveQuadratic()`.
 
-`solveQuadratic()` returns no roots when $|a| < 10^{-12}$ (only possible for a ray parallel to a
-cylinder's axis, which never meets the infinite surface) or when the discriminant
-$b^2 - 4ac$ is negative (the ray misses). A tangent ray gives a double root.
+`solveQuadratic()` returns no roots when $|a| < 10^{-12}$ or when the discriminant
+$b^2 - 4ac$ is negative (the ray misses). A tangent ray gives a double root. For a cylinder,
+$a = 0$ means the ray is parallel to the axis and never meets it. For a cone, $a = 0$ means the
+ray is parallel to a generatrix; `Cone::intersectLocal()` then solves the remaining linear
+equation and can still return one hit.
 
 ## Selecting the visible hit
 
@@ -93,7 +95,7 @@ behind it: the beam produces no return instead of reaching farther surfaces, as 
 ## Cost and precision
 
 - A scan costs one ray-primitive test per beam, firing and object: with 1024 firings, 64 rings and
-  56 objects, about 3.7 million tests per revolution. There is no acceleration structure (BVH,
+  57 objects, about 3.7 million tests per revolution. There is no acceleration structure (BVH,
   grid), which keeps the code simple for scenes of tens to a few hundreds of objects.
 - All geometry runs in double precision. The quadratic discriminant of a thin, distant cylinder is
   the small difference of two large numbers, and single precision there produces millimeter

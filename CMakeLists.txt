@@ -55,6 +55,7 @@ set(LIDAR_SIM_CORE_SOURCES
   src/geometry/plane.cpp
   src/geometry/sphere.cpp
   src/geometry/cylinder.cpp
+  src/geometry/cone.cpp
   src/geometry/ellipsoid.cpp
   src/world.cpp
   src/lidar_scanner.cpp

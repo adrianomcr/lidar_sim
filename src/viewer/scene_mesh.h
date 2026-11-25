@@ -26,10 +26,10 @@ struct SceneMesh {
 
 /// Tessellates the primitives in a world file.
 ///
-/// Planes and cylinders are infinite in the simulation. Here a plane is the part of it that covers
-/// the rest of the scene, clipped by its plane constraints, and a cylinder is cut to the scene
-/// bounds along its axis (constraints still remove the hidden part). The result is a picture of
-/// the surfaces the rays can hit, not an extra solid.
+/// Planes, cylinders and cones are infinite in the simulation. Here a plane is the part of it that
+/// covers the rest of the scene, clipped by its plane constraints, and a cylinder or cone is cut
+/// to the scene bounds along its axis (constraints still remove the hidden part). The result is a
+/// picture of the surfaces the rays can hit, not an extra solid.
 /// @throws std::runtime_error if the file cannot be read or an object is malformed.
 SceneMesh buildSceneMesh(const std::string& world_path);
 
