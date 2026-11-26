@@ -90,8 +90,9 @@ simulated clouds.
 
 In the ROS node, the pose is the latest one received on `lidar_odom_gt` when the computation
 starts. The node then waits for the end of the scan period and publishes the cloud and the
-`world -> lidar` TF with the same stamp and the same pose, so the cloud is consistent with TF. The
-stamp is the publication time, about one scan period after the pose was sampled.
+`world -> tf_child_frame` TF with the same stamp and the same pose. With the default
+`tf_child_frame` (`lidar`) the cloud is consistent with TF. The stamp is the publication time,
+about one scan period after the pose was sampled.
 
 ## Point cloud format
 

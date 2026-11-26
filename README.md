@@ -84,7 +84,8 @@ For example, `roslaunch lidar_sim example.launch motion:=sim_motion rviz:=false`
 
 - `sim_lidar` subscribes to `lidar_odom_gt` (`nav_msgs/Odometry`, the sensor pose) and publishes
   `velodyne_points` (`sensor_msgs/PointCloud2` with the Velodyne fields `x y z intensity ring
-  azimuth distance time return_number`) and the `world -> lidar` TF.
+  azimuth distance time return_number`) and the ground-truth TF `world -> tf_child_frame`
+  (the same as `lidar` unless you set another child, such as `lidar_gt`, for a SLAM).
 - `sim_motion` moves the LiDAR along a circle. It publishes `lidar_odom_gt`, `imu/data` and the
   `marker_lidar` marker.
 - `sim_drone` flies a quadrotor carrying the LiDAR through a waypoint mission. Besides the topics

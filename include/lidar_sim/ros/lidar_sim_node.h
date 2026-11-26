@@ -19,7 +19,8 @@ namespace lidar_sim {
 ///
 /// Follows the sensor pose received on `lidar_odom_gt`, simulates one revolution per scan
 /// period against the world file, and publishes the cloud on `velodyne_points` together with
-/// the world -> lidar transform. Parameters are read from the private namespace.
+/// the ground-truth transform `world_frame` -> `tf_child_frame`. The cloud stays in
+/// `lidar_frame`. Parameters are read from the private namespace.
 class LidarSimNode {
  public:
   /// @throws std::runtime_error on missing parameters or an invalid world file.
@@ -35,6 +36,7 @@ class LidarSimNode {
   LidarScanner scanner_;
   std::string world_frame_;
   std::string lidar_frame_;
+  std::string tf_child_frame_;
 
   Eigen::Vector3d position_;
   Eigen::Quaterniond orientation_;

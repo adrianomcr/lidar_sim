@@ -99,6 +99,7 @@ Angles ending in `_deg` are in degrees. Orientations use roll, pitch, yaw
 | `world_file` | string | set by the launch file | Path of the world file |
 | `world_frame` | string | `world` | Parent frame of the published TF |
 | `lidar_frame` | string | `lidar` | Frame of the point cloud |
+| `tf_child_frame` | string | `lidar` | Child of the ground-truth TF. Use another name, such as `lidar_gt`, when a SLAM also parents `lidar` |
 | `scan_rate` | double | 10.0 | Revolutions per second [Hz] |
 | `num_azimuth_steps` | int | 1024 | Firings per revolution |
 | `num_rings` | int | 64 | Beams stacked in elevation |

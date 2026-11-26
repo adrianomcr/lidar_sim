@@ -176,13 +176,13 @@ flowchart LR
   world -.-> lidar
   motion -- "lidar_odom_gt" --> lidar
   motion -- "imu/data, marker_lidar" --> rviz
-  lidar -- "velodyne_points, TF world to lidar" --> rviz
+  lidar -- "velodyne_points, TF world to tf_child_frame" --> rviz
 ```
 
 1. The motion node integrates its model at 50 Hz and publishes the LiDAR pose on `lidar_odom_gt`.
 2. `sim_lidar` keeps the latest pose. At 10 Hz it computes a full revolution with the sensor frozen
    at that pose, waits for the end of the scan period, and publishes the cloud and the
-   `world -> lidar` transform with the same timestamp.
+   `world -> tf_child_frame` transform with the same timestamp.
 
 The nodes only share the `lidar_odom_gt` topic, so any other source of poses (a bag file, a
 different simulator, a teleop node) can drive `sim_lidar`.

@@ -35,6 +35,8 @@ struct SimulationConfig {
   struct Lidar {
     std::string world_frame = "world";
     std::string lidar_frame = "lidar";
+    /// Child frame of the ground-truth TF. Empty means the same as `lidar_frame`.
+    std::string tf_child_frame = "lidar";
     double scan_rate = 10.0;
     int num_azimuth_steps = 1024;
     int num_rings = 64;

@@ -268,6 +268,14 @@ SimulationConfig loadSimulationConfig(const std::string& path) {
     const YAML::Node lidar = requireMap(root, "sim_lidar", "");
     config.lidar.world_frame = readString(lidar, "world_frame", "sim_lidar/");
     config.lidar.lidar_frame = readString(lidar, "lidar_frame", "sim_lidar/");
+    if (lidar["tf_child_frame"] && !lidar["tf_child_frame"].IsNull()) {
+      config.lidar.tf_child_frame = readString(lidar, "tf_child_frame", "sim_lidar/");
+    } else {
+      config.lidar.tf_child_frame = config.lidar.lidar_frame;
+    }
+    if (config.lidar.tf_child_frame.empty()) {
+      config.lidar.tf_child_frame = config.lidar.lidar_frame;
+    }
     config.lidar.scan_rate = readDouble(lidar, "scan_rate", "sim_lidar/");
     config.lidar.num_azimuth_steps = readInt(lidar, "num_azimuth_steps", "sim_lidar/");
     config.lidar.num_rings = readInt(lidar, "num_rings", "sim_lidar/");
@@ -340,7 +348,8 @@ void saveSimulationConfig(const std::string& path, const SimulationConfig& confi
   const SimulationConfig::Lidar& lidar = config.lidar;
   out << "sim_lidar:\n";
   out << "  world_frame: " << lidar.world_frame << "\n";
-  out << "  lidar_frame: " << lidar.lidar_frame << "\n\n";
+  out << "  lidar_frame: " << lidar.lidar_frame << "\n";
+  out << "  tf_child_frame: " << lidar.tf_child_frame << "\n\n";
   out << "  scan_rate: " << formatNumber(lidar.scan_rate) << "\n";
   out << "  num_azimuth_steps: " << lidar.num_azimuth_steps << "\n";
   out << "  num_rings: " << lidar.num_rings << "\n";
