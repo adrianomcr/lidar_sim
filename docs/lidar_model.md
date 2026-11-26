@@ -73,14 +73,17 @@ $i \cdot N_r + k$: firing first, ring second.
 
 ## Timing
 
-With the scan period $T = 1/f$, firing $i$ happens at
+With the scan period $T = 1/f$, the columns are spaced by $\Delta t = T / N_a$. Beam $(i, k)$ is
+stamped
 
 ```math
-\tau_i = T\, \frac{i}{N_a}
+\tau_{i,k} = i\, \Delta t + k\, \frac{\Delta t}{N_r}
 ```
 
-after the start of the revolution, and all rings of a firing share that time. With the defaults
-the times go from 0 to 99.94 ms.
+seconds after the start of the revolution. Ring 0 of a column has the column time, and each
+following ring is one step of $\Delta t / N_r$ later. The first beam of the scan is at 0. With
+the defaults ($T = 0.1$ s, 1024 columns, 64 rings) that step is about 1.53 µs, and the last beam
+falls just short of 0.1 s.
 
 The geometry of a scan uses a **single pose** for the whole revolution: the simulator does not
 reproduce the motion distortion of a sensor moving while it spins, even though the `time` field
@@ -108,7 +111,7 @@ Velodyne driver layout, with a point step of 48 bytes:
 | `distance` | float32 | 24 | Range $t^\star$ [m] |
 | `ring` | uint16 | 28 | Beam index $k$, 0 is the lowest |
 | | | 30 | 2 bytes of padding |
-| `time` | float64 | 32 | $\tau_i$ [s] since the start of the revolution |
+| `time` | float64 | 32 | $\tau_{i,k}$ [s] since the start of the revolution |
 | `return_number` | uint8 | 40 | Always 1 (single return) |
 | | | 41 | 7 bytes of padding |
 

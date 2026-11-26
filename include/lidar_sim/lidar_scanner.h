@@ -31,7 +31,7 @@ struct LidarReturn {
   float azimuth = 0.0f;   ///< Firing azimuth, clockwise from the sensor x axis, in [0, 2*pi) [rad].
   float intensity = 0.0f;
   std::uint16_t ring = 0;  ///< Beam index, 0 is the lowest beam.
-  double time = 0.0;       ///< Firing time relative to the start of the revolution [s].
+  double time = 0.0;       ///< Firing time of this beam, from the start of the revolution [s].
 };
 
 /// Simulates full LiDAR revolutions by casting one ray per beam and firing against a World.
@@ -60,7 +60,8 @@ class LidarScanner {
   LidarConfig config_;
   std::vector<Eigen::Vector3d> beam_directions_;  ///< Unit beam directions in the sensor frame.
   std::vector<float> azimuths_;                   ///< Azimuth of each azimuth step.
-  std::vector<double> firing_times_;              ///< Firing time of each azimuth step.
+  std::vector<double> firing_times_;              ///< Time of ring 0 at each azimuth step [s].
+  double ring_time_step_ = 0.0;                   ///< Extra delay of each successive ring [s].
 };
 
 }  // namespace lidar_sim
