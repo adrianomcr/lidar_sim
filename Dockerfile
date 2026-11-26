@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libeigen3-dev \
     libyaml-cpp-dev \
+    qtbase5-dev \
+    libgl1-mesa-dev \
     python3-yaml \
     python3-pip \
     python3-catkin-tools \

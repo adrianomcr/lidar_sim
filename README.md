@@ -4,33 +4,38 @@ Simulation of a LiDAR based on geometric primitives. Below an example for the Ve
 
 ![image](.images/example.png)
 
-## Docker setup
-Clone the repo
+## Standalone viewer (Ubuntu 22.04 and 24.04)
+
+This is the primary setup. Ubuntu 22.04 and 24.04 have no ROS 1 packages. The viewer builds with plain CMake and needs Eigen, yaml-cpp and Qt 6:
+
 ```bash
-mkdir -p ~/simulation_ws/src
-cd ~/simulation_ws/src
 git clone git@github.com:adrianomcr/lidar_sim.git
 cd lidar_sim
+sudo apt install build-essential cmake pkg-config libeigen3-dev libyaml-cpp-dev \
+  qt6-base-dev libgl1-mesa-dev
+./build.sh
+./build/lidar_sim_viewer
 ```
 
-Build the image
+Run the viewer from the `lidar_sim` directory. It opens `config/params.yaml` in the current directory when that file exists. `./build.sh` passes `-DLIDAR_SIM_WITH_ROS=OFF`, so this build stays independent of any ROS workspace.
+
+`lidar_sim_viewer` reads `config/params.yaml` and `config/world.yaml`. The side panel edits the same parameters the ROS nodes use, and Save writes them back to the parameter file. Browse picks another world file. Play runs the circle (`sim_motion`) or the drone mission (`sim_drone`); the speed box is 1x by default. Decay, next to the point-size slider, is how long returns stay on screen in simulation seconds (0 keeps the latest scan). Points are colored by world-frame height. Left drag orbits the view, right drag pans, the wheel zooms.
+
 ```bash
-docker compose -f docker-compose.yaml build
+./build/lidar_sim_viewer --world my_world.yaml --params my_params.yaml
+./build/lidar_sim_viewer --check    # load, tessellate and compute one scan, then exit
 ```
 
-Give docker access to the X server
-```bash
-xhost +local:docker
-```
+## ROS (Ubuntu 20.04)
 
-Run the docker container
-```bash
-docker compose -f docker-compose.yaml run --rm lidar_sim bash
-```
+The ROS nodes need ROS Noetic, which is packaged for Ubuntu 20.04. Install it on a 20.04 machine, or run the Docker image below from a 22.04 or 24.04 host.
 
+The native viewer and the Docker image can be used together on Ubuntu 24.04. `./build.sh` writes the viewer to `./build` on the host. The image is a separate Ubuntu 20.04 system: it copies this package and compiles it inside the image. Starting the container does not install ROS on the host and does not use `./build`. One clone of the repository is enough for both.
 
-## Native setup with ROS
-Requires ROS Noetic (Ubuntu 20.04), Eigen 3 and yaml-cpp (`sudo apt install libeigen3-dev libyaml-cpp-dev python3-yaml`).
+### Native Noetic
+
+Requires ROS Noetic, Eigen 3 and yaml-cpp (`sudo apt install libeigen3-dev libyaml-cpp-dev python3-yaml`).
+
 ```bash
 mkdir -p ~/simulation_ws/src
 cd ~/simulation_ws/src
@@ -40,31 +45,45 @@ catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release
 source devel/setup.bash
 ```
 
-## Standalone viewer (no ROS)
-Ubuntu 22.04 and 24.04 have no ROS 1 packages. The viewer builds with plain CMake and only needs Eigen, yaml-cpp and Qt 6 (Qt 5 works too):
+`./build.sh ros` is the same catkin build, run from a sourced workspace. With Qt 5 installed (`qtbase5-dev` and `libgl1-mesa-dev`), that build also produces the viewer.
+
+### Docker
+
+The image is based on `ros:noetic-ros-base-focal` (Ubuntu 20.04). During the image build it installs the ROS tools and these packages:
 
 ```bash
-sudo apt install build-essential cmake pkg-config libeigen3-dev libyaml-cpp-dev \
-  qt6-base-dev libgl1-mesa-dev
-cd lidar_sim
-./build.sh
-./build/lidar_sim_viewer
+sudo apt install qtbase5-dev libgl1-mesa-dev libeigen3-dev libyaml-cpp-dev pkg-config
 ```
 
-Run the viewer from the `lidar_sim` directory. It opens `config/params.yaml` in the current directory when that file exists. `./build.sh ros` is the catkin build, for a sourced Noetic workspace.
+That install happens inside the image, not on the host. Qt 5 is what Ubuntu 20.04 provides, so the image builds `lidar_sim_viewer` together with the ROS nodes.
 
-`lidar_sim_viewer` reads `config/params.yaml` and `config/world.yaml`. The side panel edits the same parameters the ROS nodes use, and Save writes them back to the parameter file. Browse picks another world file. Play runs the circle (`sim_motion`) or the drone mission (`sim_drone`); the speed box is 1x by default. Decay, next to the point-size slider, is how long returns stay on screen in simulation seconds (0 keeps the latest scan). Points are colored by world-frame height. Left drag orbits the view, right drag pans, the wheel zooms.
+From the `lidar_sim` directory, build the image:
 
 ```bash
-./build/lidar_sim_viewer --world my_world.yaml --params my_params.yaml
-./build/lidar_sim_viewer --check    # load, tessellate and compute one scan, then exit
+docker compose -f docker-compose.yaml build
 ```
 
-If a ROS workspace is already sourced, pass `-DLIDAR_SIM_WITH_ROS=OFF` or the configure step will look for catkin. On a machine with ROS Noetic and Qt, `catkin build` builds the nodes and the viewer.
+Give Docker access to the X server, then open a shell in the container:
+
+```bash
+xhost +local:docker
+docker compose -f docker-compose.yaml run --rm lidar_sim bash
+```
+
+Inside the container, `roslaunch lidar_sim example.launch` starts the simulation.
+
+The Dockerfile copies the package and compiles it while the image is built. `docker-compose.yaml` does not mount the source tree, so a container keeps the files from the image. After changing code, configuration, or the Dockerfile, rebuild the image before starting the container again:
+
+```bash
+docker compose -f docker-compose.yaml build
+docker compose -f docker-compose.yaml run --rm lidar_sim bash
+```
 
 
 ## Use it
-Without ROS, run `./build/lidar_sim_viewer` (see above). With ROS:
+
+On the host, run `./build/lidar_sim_viewer`. With ROS, on 20.04 or inside the container:
+
 ```bash
 roslaunch lidar_sim example.launch
 ```
