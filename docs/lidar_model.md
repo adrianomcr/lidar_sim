@@ -99,8 +99,8 @@ about one scan period after the pose was sampled.
 
 ## Point cloud format
 
-`toPointCloud2()` (`ros/conversions.cpp`) writes an unorganized cloud (`height` 1) in the
-Velodyne driver layout, with a point step of 48 bytes:
+`toPointCloud2()` (`ros/conversions.cpp`) writes an unorganized cloud (`height` 1). The default
+layout below has a point step of 48 bytes. `point_time` changes only the timestamp field:
 
 | Field | Type | Offset | Meaning |
 | --- | --- | --- | --- |
@@ -111,12 +111,21 @@ Velodyne driver layout, with a point step of 48 bytes:
 | `distance` | float32 | 24 | Range $t^\star$ [m] |
 | `ring` | uint16 | 28 | Beam index $k$, 0 is the lowest |
 | | | 30 | 2 bytes of padding |
-| `time` | float64 | 32 | $\tau_{i,k}$ [s] since the start of the revolution |
+| `time` | float64 | 32 | $\tau_{i,k}$ [s] since the start of the revolution. This is `point_time: sim` |
 | `return_number` | uint8 | 40 | Always 1 (single return) |
 | | | 41 | 7 bytes of padding |
 
-- The `fields` array lists them in the order x, y, z, intensity, time, ring, azimuth, distance,
-  return_number; consumers should look fields up by name, not by position.
+`point_time` selects the timestamp that SLAM drivers expect. The offset stays 32. `velodyne` and
+`ouster` store 4 bytes there, and bytes 36–39 stay zero.
+
+| `point_time` | Field | Datatype | Unit |
+| --- | --- | --- | --- |
+| `sim` | `time` | 8, float64 | Seconds, $\tau_{i,k}$ |
+| `velodyne` | `time` | 7, float32 | Seconds, $\tau_{i,k}$. This is what `ros-drivers/velodyne` writes in `PointcloudXYZIRT` |
+| `ouster` | `t` | 6, uint32 | Nanoseconds, $\tau_{i,k} \times 10^9$. This is what `ouster_ros::Point` publishes. The official driver uses uint32, not float64 |
+
+- The `fields` array lists them in the order x, y, z, intensity, the timestamp, ring, azimuth,
+  distance, return_number; consumers should look fields up by name, not by position.
 - Only valid returns are written, in index order (by firing, then by ring). `width` is the number
   of valid returns, `is_dense` is true (no NaN points), and a scan without hits gives an empty
   cloud.

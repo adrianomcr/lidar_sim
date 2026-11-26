@@ -14,7 +14,7 @@ Simulates the LiDAR against the world file.
 | Direction | Topic | Type | Notes |
 | --- | --- | --- | --- |
 | Subscribes | `lidar_odom_gt` | `nav_msgs/Odometry` | Sensor pose in `world_frame`. Only the pose is used; the latest message wins. |
-| Publishes | `velodyne_points` | `sensor_msgs/PointCloud2` | One cloud per revolution at `scan_rate`, in `lidar_frame` ([format](lidar_model.md#point-cloud-format)) |
+| Publishes | `velodyne_points` | `sensor_msgs/PointCloud2` | One cloud per revolution at `scan_rate`, in `lidar_frame`. The timestamp field follows `point_time` ([format](lidar_model.md#point-cloud-format)) |
 | Publishes | `/tf` | `world_frame -> tf_child_frame` | Ground-truth pose of the scan. `tf_child_frame` defaults to `lidar_frame` |
 
 Until the first odometry message arrives the sensor stays at `initial_position` /

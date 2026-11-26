@@ -83,7 +83,9 @@ world.save('my_world.yaml')
 
 Every node reads its parameters from its private namespace, so the top-level keys of
 `params.yaml` must match the node names. All parameters are required except
-`investigate/num_samples`. A missing one stops the node with a message like:
+`sim_lidar/tf_child_frame`, `sim_lidar/point_time`, and `investigate/num_samples`, which fall
+back to the defaults in the tables below. A missing required parameter stops the node with a
+message like:
 
 ```
 Missing or invalid parameter '/sim_drone/update_rate'. Is config/params.yaml loaded?
@@ -100,6 +102,7 @@ Angles ending in `_deg` are in degrees. Orientations use roll, pitch, yaw
 | `world_frame` | string | `world` | Parent frame of the published TF |
 | `lidar_frame` | string | `lidar` | Frame of the point cloud |
 | `tf_child_frame` | string | `lidar` | Child of the ground-truth TF. Use another name, such as `lidar_gt`, when a SLAM also parents `lidar` |
+| `point_time` | string | `sim` | Timestamp field. `sim`: `time` float64 seconds. `velodyne`: `time` float32 seconds. `ouster`: `t` uint32 nanoseconds |
 | `scan_rate` | double | 10.0 | Revolutions per second [Hz] |
 | `num_azimuth_steps` | int | 1024 | Firings per revolution |
 | `num_rings` | int | 64 | Beams stacked in elevation |

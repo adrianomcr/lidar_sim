@@ -17,10 +17,22 @@
 
 namespace lidar_sim {
 
-/// Packs the valid returns into a Velodyne-style cloud with fields x, y, z, intensity, time, ring,
-/// azimuth, distance and return_number, at fixed byte offsets with a 48-byte point step.
+/// How the per-point timestamp is written into the cloud.
+/// `Sim` is this simulator's original field. `Velodyne` and `Ouster` follow those ROS drivers.
+enum class PointTimeFormat {
+  Sim,       ///< Field `time`, float64, seconds from the start of the revolution.
+  Velodyne,  ///< Field `time`, float32, seconds. Matches ros-drivers/velodyne PointcloudXYZIRT.
+  Ouster,    ///< Field `t`, uint32, nanoseconds. Matches ouster_ros::Point.
+};
+
+/// @throws std::runtime_error if `name` is not `sim`, `velodyne`, or `ouster`.
+PointTimeFormat pointTimeFormatFromName(const std::string& name);
+
+/// Packs the valid returns into an unorganized cloud with fields x, y, z, intensity, the timestamp
+/// selected by `time_format`, ring, azimuth, distance and return_number. The point step is 48 bytes.
 void toPointCloud2(const std::vector<LidarReturn>& returns, const std::string& frame_id,
-                   const ros::Time& stamp, sensor_msgs::PointCloud2& cloud);
+                   const ros::Time& stamp, sensor_msgs::PointCloud2& cloud,
+                   PointTimeFormat time_format);
 
 sensor_msgs::Imu toImuMsg(const ImuMeasurement& imu, const std::string& frame_id,
                           const ros::Time& stamp);

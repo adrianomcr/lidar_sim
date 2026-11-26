@@ -11,6 +11,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 
 #include "lidar_sim/lidar_scanner.h"
+#include "lidar_sim/ros/conversions.h"
 #include "lidar_sim/world.h"
 
 namespace lidar_sim {
@@ -37,6 +38,7 @@ class LidarSimNode {
   std::string world_frame_;
   std::string lidar_frame_;
   std::string tf_child_frame_;
+  PointTimeFormat point_time_ = PointTimeFormat::Sim;
 
   Eigen::Vector3d position_;
   Eigen::Quaterniond orientation_;

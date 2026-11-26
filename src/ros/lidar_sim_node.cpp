@@ -35,10 +35,14 @@ LidarSimNode::LidarSimNode(ros::NodeHandle& nh, const ros::NodeHandle& pnh)
   if (tf_child_frame_.empty()) {
     tf_child_frame_ = lidar_frame_;
   }
+  std::string point_time_name = "sim";
+  pnh.param("point_time", point_time_name, point_time_name);
+  point_time_ = pointTimeFormatFromName(point_time_name);
   ROS_INFO("Loaded %zu objects from %s", world_.size(),
            getRequiredParam<std::string>(pnh, "world_file").c_str());
   ROS_INFO("Point cloud frame is %s; ground-truth TF is %s -> %s", lidar_frame_.c_str(),
            world_frame_.c_str(), tf_child_frame_.c_str());
+  ROS_INFO("Point time format is %s", point_time_name.c_str());
 
   odometry_sub_ = nh.subscribe("lidar_odom_gt", 1, &LidarSimNode::odometryCallback, this);
   cloud_pub_ = nh.advertise<sensor_msgs::PointCloud2>("velodyne_points", 1);
@@ -75,7 +79,7 @@ void LidarSimNode::run() {
     const ros::Time stamp = ros::Time::now();
     tf_broadcaster_.sendTransform(
         toTransformMsg(position, orientation, world_frame_, tf_child_frame_, stamp));
-    toPointCloud2(returns_, lidar_frame_, stamp, cloud_);
+    toPointCloud2(returns_, lidar_frame_, stamp, cloud_, point_time_);
     cloud_pub_.publish(cloud_);
   }
 }
