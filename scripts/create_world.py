@@ -20,6 +20,7 @@ HEADER = """\
 #   plane      infinite plane through `center`, normal along the local z axis
 #   sphere     sphere of `radius`
 #   cylinder   infinite cylinder of `radius`, axis along the local z axis
+#   cone       double cone x^2 + y^2 = slope^2 * z^2, axis along the local z axis
 #   ellipsoid  semi-axes `size` along the local x, y and z axes
 # `center` [m] and `angles` (roll, pitch, yaw [rad], applied as Rz(yaw) * Ry(pitch) * Rx(roll))
 # place the local frame in the world; `angles` defaults to zero.
@@ -49,6 +50,10 @@ class WorldBuilder:
     def add_cylinder(self, center, angles, radius, plane_constraints=(), description=''):
         self._add('cylinder', description, plane_constraints,
                   center=center, angles=angles, radius=radius)
+
+    def add_cone(self, center, angles, slope, plane_constraints=(), description=''):
+        self._add('cone', description, plane_constraints,
+                  center=center, angles=angles, slope=slope)
 
     def add_ellipsoid(self, center, size, angles=(0, 0, 0), plane_constraints=(), description=''):
         if len(size) != 3:
@@ -166,6 +171,14 @@ def build_hangar_world():
         center=[1, 16, 9], radius=1.5,
         plane_constraints=[constraint([0, 0.4, 1], [0, 0, 0])],
         description='Sphere with plane constraint')
+    # Upper nappe only, apex at the center, opening upward. Base radius is slope * height.
+    world.add_cone(
+        center=[-8, 22, 2], angles=[0, 0, 0], slope=0.5,
+        plane_constraints=[
+            constraint([0, 0, 1], [0, 0, 0]),
+            constraint([0, 0, -1], [0, 0, 4]),
+        ],
+        description='Cone with plane constraint')
 
     return world
 

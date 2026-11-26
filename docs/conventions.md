@@ -13,7 +13,8 @@ SI everywhere: meters, seconds, radians, m/s, rad/s and m/s². The exceptions ar
 | Frame | Name in ROS | Definition |
 | --- | --- | --- |
 | World | `world` (`world_frame`) | Fixed frame, z up. Gravity is $-g\thinspace\hat z$. |
-| LiDAR | `lidar` (`lidar_frame`) | Sensor frame: x at azimuth 0, y to the left, z along the spin axis. The IMU uses the same frame. |
+| LiDAR | `lidar` (`lidar_frame`) | Sensor frame: x at azimuth 0, y to the left, z along the spin axis. The IMU and the point cloud use this frame. |
+| LiDAR ground truth | `tf_child_frame`, default `lidar` | Child of the `world` TF published by `sim_lidar`. Set it to `lidar_gt` when another node also parents `lidar`. |
 | Drone | `drone` (`drone_frame`) | Quadrotor body: x forward, z along the thrust. |
 | Primitive | none | Local frame of each object in the world file, where its canonical shape is defined. |
 

@@ -5,6 +5,7 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include "lidar_sim/geometry/cone.h"
 #include "lidar_sim/geometry/cylinder.h"
 #include "lidar_sim/geometry/ellipsoid.h"
 #include "lidar_sim/geometry/plane.h"
@@ -80,6 +81,9 @@ std::unique_ptr<Primitive> makePrimitive(const YAML::Node& object) {
   }
   if (type == "cylinder") {
     return std::make_unique<Cylinder>(center, orientation, readPositive(object, "radius"));
+  }
+  if (type == "cone") {
+    return std::make_unique<Cone>(center, orientation, readPositive(object, "slope"));
   }
   if (type == "ellipsoid") {
     return std::make_unique<Ellipsoid>(center, orientation, readVector3(object, "size"));

@@ -17,9 +17,10 @@ keep the formulas short.
 | Plane | $z = 0$ | `center`, `angles` | `geometry/plane.cpp` |
 | Sphere | $x^2 + y^2 + z^2 = \rho^2$ | `center`, `radius`, optional `angles` | `geometry/sphere.cpp` |
 | Cylinder | $x^2 + y^2 = \rho^2$ | `center`, `angles`, `radius` | `geometry/cylinder.cpp` |
+| Cone | $x^2 + y^2 = k^2 z^2$ | `center`, `angles`, `slope` | `geometry/cone.cpp` |
 | Ellipsoid | $\frac{x^2}{s_x^2} + \frac{y^2}{s_y^2} + \frac{z^2}{s_z^2} = 1$ | `center`, `size`, `angles` | `geometry/ellipsoid.cpp` |
 
-Planes and cylinders are infinite. Use [plane constraints](constraints.md) to bound them.
+Planes, cylinders and cones are infinite. Use [plane constraints](constraints.md) to bound them.
 
 ## Plane
 
@@ -99,6 +100,45 @@ local frame avoids these projections.
   are infinite, but they run through the walls, floor or roof, which hide everything outside the
   hangar, so they look finite from inside.
 
+## Cone
+
+**Surface.** An infinite double cone with its apex at the local origin and its axis along the
+local z axis. With $k$ the `slope`:
+
+```math
+x^2 + y^2 - k^2 z^2 = 0.
+```
+
+The radius at height $z$ is $k\lvert z \rvert$, so $\tan\alpha = k$ where $\alpha$ is the angle
+between the axis and a straight line on the surface. Both nappes are present: $z > 0$ and
+$z < 0$. In the world the axis passes through `center` along $R\thinspace\hat z$. `slope` must be
+positive; its sign would not change the surface.
+
+**Intersection.** Substituting the ray, with $o_\perp = (o_x, o_y)$ and $d_\perp = (d_x, d_y)$:
+
+```math
+a = \lVert d_\perp \rVert^2 - k^2 d_z^2,\quad
+b = 2\left(o_\perp \cdot d_\perp - k^2 o_z d_z\right),\quad
+c = \lVert o_\perp \rVert^2 - k^2 o_z^2.
+```
+
+$a$ is the cylinder coefficient with the axial part subtracted. For a unit direction it is
+$\sin^2\beta - k^2\cos^2\beta$, where $\beta$ is the angle between the ray and the axis, so
+$a > 0$ when that angle is wider than the cone. The roots come from `solveQuadratic()`. A ray
+parallel to a generatrix has $a = 0$ (the same $10^{-12}$ test). It then meets the cone at most
+once, at $t = -c / b$ when $b$ is not zero. If $a$ and $b$ both vanish, the ray lies on the cone
+or misses it, and there is no single hit.
+
+**Notes.**
+
+- A constraint $z > 0$ keeps the upper nappe. Adding $z < H$ makes a finite cone of height $H$
+  whose base radius is $k H$. Two cuts on the same side of the apex make a frustum. Constraints
+  remove surface, so the base stays open.
+- The example scene has one of these next to the other test shapes: apex at $(-8, 22, 2)$,
+  `slope` $0.5$, kept where $z > 0$ and $z < 4$.
+- A ray aimed at the apex is an ordinary root of the quadratic. Along the axis it is a double
+  root at the apex.
+
 ## Ellipsoid
 
 **Surface.** An ellipsoid centered at the local origin with semi-axes $s = (s_x, s_y, s_z)$
@@ -137,6 +177,7 @@ direction $S^{-1} d$ that is no longer unit length, which is why $a \ne 1$ here.
 | --- | --- | --- | --- |
 | Sphere | $d \cdot d$ | $2\thinspace o \cdot d$ | $o \cdot o - \rho^2$ |
 | Cylinder | $d_\perp \cdot d_\perp$ | $2\thinspace o_\perp \cdot d_\perp$ | $o_\perp \cdot o_\perp - \rho^2$ |
+| Cone | $\lVert d_\perp \rVert^2 - k^2 d_z^2$ | $2(o_\perp \cdot d_\perp - k^2 o_z d_z)$ | $\lVert o_\perp \rVert^2 - k^2 o_z^2$ |
 | Ellipsoid | $d^\top D\thinspace d$ | $2\thinspace o^\top D\thinspace d$ | $o^\top D\thinspace o - 1$ |
 
 The roots are $t_{1,2} = \dfrac{-b \mp \sqrt{b^2 - 4ac}}{2a}$, returned with $t_1 \le t_2$.

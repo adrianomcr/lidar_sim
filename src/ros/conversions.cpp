@@ -1,6 +1,9 @@
 #include "lidar_sim/ros/conversions.h"
 
+#include <cmath>
 #include <cstring>
+#include <cstdint>
+#include <stdexcept>
 
 #include <sensor_msgs/PointField.h>
 
@@ -67,9 +70,32 @@ geometry_msgs::Point toPointMsg(const Eigen::Vector3d& v) {
 
 }  // namespace
 
+PointTimeFormat pointTimeFormatFromName(const std::string& name) {
+  if (name == "sim") {
+    return PointTimeFormat::Sim;
+  }
+  if (name == "velodyne") {
+    return PointTimeFormat::Velodyne;
+  }
+  if (name == "ouster") {
+    return PointTimeFormat::Ouster;
+  }
+  throw std::runtime_error("point_time must be 'sim', 'velodyne', or 'ouster'");
+}
+
 void toPointCloud2(const std::vector<LidarReturn>& returns, const std::string& frame_id,
-                   const ros::Time& stamp, sensor_msgs::PointCloud2& cloud) {
+                   const ros::Time& stamp, sensor_msgs::PointCloud2& cloud,
+                   PointTimeFormat time_format) {
   using sensor_msgs::PointField;
+  const char* time_name = "time";
+  std::uint8_t time_type = PointField::FLOAT64;
+  if (time_format == PointTimeFormat::Velodyne) {
+    time_type = PointField::FLOAT32;
+  } else if (time_format == PointTimeFormat::Ouster) {
+    time_name = "t";
+    time_type = PointField::UINT32;
+  }
+
   cloud.header.frame_id = frame_id;
   cloud.header.stamp = stamp;
   cloud.fields = {
@@ -77,7 +103,7 @@ void toPointCloud2(const std::vector<LidarReturn>& returns, const std::string& f
       makeField("y", kOffsetY, PointField::FLOAT32),
       makeField("z", kOffsetZ, PointField::FLOAT32),
       makeField("intensity", kOffsetIntensity, PointField::FLOAT32),
-      makeField("time", kOffsetTime, PointField::FLOAT64),
+      makeField(time_name, kOffsetTime, time_type),
       makeField("ring", kOffsetRing, PointField::UINT16),
       makeField("azimuth", kOffsetAzimuth, PointField::FLOAT32),
       makeField("distance", kOffsetDistance, PointField::FLOAT32),
@@ -109,7 +135,18 @@ void toPointCloud2(const std::vector<LidarReturn>& returns, const std::string& f
     writeValue(point, kOffsetAzimuth, hit.azimuth);
     writeValue(point, kOffsetDistance, hit.distance);
     writeValue(point, kOffsetRing, hit.ring);
-    writeValue(point, kOffsetTime, hit.time);
+    if (time_format == PointTimeFormat::Velodyne) {
+      writeValue(point, kOffsetTime, static_cast<float>(hit.time));
+    } else if (time_format == PointTimeFormat::Ouster) {
+      const double nanos = hit.time * 1.0e9;
+      const std::uint32_t ticks =
+          nanos <= 0.0 ? 0u
+                       : nanos >= 4294967295.0 ? 4294967295u
+                                               : static_cast<std::uint32_t>(std::llround(nanos));
+      writeValue(point, kOffsetTime, ticks);
+    } else {
+      writeValue(point, kOffsetTime, hit.time);
+    }
     writeValue(point, kOffsetReturnNumber, kReturnNumber);
     point += kPointStep;
   }

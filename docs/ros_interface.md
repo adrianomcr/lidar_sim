@@ -14,8 +14,8 @@ Simulates the LiDAR against the world file.
 | Direction | Topic | Type | Notes |
 | --- | --- | --- | --- |
 | Subscribes | `lidar_odom_gt` | `nav_msgs/Odometry` | Sensor pose in `world_frame`. Only the pose is used; the latest message wins. |
-| Publishes | `velodyne_points` | `sensor_msgs/PointCloud2` | One cloud per revolution at `scan_rate`, in `lidar_frame` ([format](lidar_model.md#point-cloud-format)) |
-| Publishes | `/tf` | `world_frame -> lidar_frame` | Same stamp and pose as the cloud |
+| Publishes | `velodyne_points` | `sensor_msgs/PointCloud2` | One cloud per revolution at `scan_rate`, in `lidar_frame`. The timestamp field follows `point_time` ([format](lidar_model.md#point-cloud-format)) |
+| Publishes | `/tf` | `world_frame -> tf_child_frame` | Ground-truth pose of the scan. `tf_child_frame` defaults to `lidar_frame` |
 
 Until the first odometry message arrives the sensor stays at `initial_position` /
 `initial_rpy_deg`.
@@ -58,12 +58,17 @@ every cloud with all their fields.
 
 ```mermaid
 flowchart LR
-  world -- "TF from sim_lidar, at scan_rate" --> lidar
+  world -- "TF from sim_lidar, at scan_rate" --> tf_child["tf_child_frame"]
   world -. "drone_odom_gt only, no TF" .-> drone
 ```
 
-- The `world -> lidar` transform is broadcast by `sim_lidar`, not by the motion node, at the scan
-  rate and with the exact pose used for the scan. RViz can therefore always place the cloud.
+- The ground-truth transform is broadcast by `sim_lidar`, not by the motion node, at the scan
+  rate and with the exact pose used for the scan. Its child frame is `tf_child_frame`.
+- By default that child is `lidar`, the same frame as the cloud, so RViz can place
+  `velodyne_points` in `world`.
+- A SLAM that publishes `odom -> lidar` needs the ground truth on a different child. Set
+  `tf_child_frame: lidar_gt`. The cloud stays in `lidar` for the SLAM. With the SLAM map frame
+  named `world`, RViz shows `lidar_gt` at the true pose and `lidar` at the estimated one.
 - No TF is published for the `drone` frame. Publish one from `drone_odom_gt` if you need it.
 
 ## Driving the LiDAR from another source

@@ -30,11 +30,15 @@ LidarScanner::LidarScanner(const LidarConfig& config) : config_(config) {
 
   azimuths_.resize(num_azimuth);
   firing_times_.resize(num_azimuth);
+  // Column spacing dt = T / N_a. Rings inside a column are spaced by dt / N_r, so ring 0 of
+  // the next column follows the last ring of this one by one ring step.
+  const double column_dt = scan_period / num_azimuth;
+  ring_time_step_ = column_dt / num_rings;
   beam_directions_.resize(static_cast<std::size_t>(num_azimuth) * num_rings);
   for (int i = 0; i < num_azimuth; ++i) {
     const double azimuth = 2.0 * M_PI * i / num_azimuth;
     azimuths_[i] = static_cast<float>(azimuth);
-    firing_times_[i] = scan_period * i / num_azimuth;
+    firing_times_[i] = column_dt * i;
     for (int ring = 0; ring < num_rings; ++ring) {
       const double elevation = config_.min_elevation + ring * elevation_step;
       // Clockwise sweep: the azimuth grows towards the sensor's -y axis.
@@ -87,7 +91,7 @@ void LidarScanner::scanRings(const World& world, const Eigen::Vector3d& position
       hit.azimuth = azimuths_[i];
       hit.intensity = config_.intensity;
       hit.ring = static_cast<std::uint16_t>(ring);
-      hit.time = firing_times_[i];
+      hit.time = firing_times_[i] + ring * ring_time_step_;
     }
   }
 }

@@ -4,6 +4,7 @@
 #   plane      infinite plane through `center`, normal along the local z axis
 #   sphere     sphere of `radius`
 #   cylinder   infinite cylinder of `radius`, axis along the local z axis
+#   cone       double cone x^2 + y^2 = slope^2 * z^2, axis along the local z axis
 #   ellipsoid  semi-axes `size` along the local x, y and z axes
 # `center` [m] and `angles` (roll, pitch, yaw [rad], applied as Rz(yaw) * Ry(pitch) * Rx(roll))
 # place the local frame in the world; `angles` defaults to zero.
@@ -323,3 +324,13 @@ objects:
   plane_constraints:
   - normal: [0, 0.4, 1]
     point: [0, 0, 0]
+- type: cone
+  description: Cone with plane constraint
+  center: [-8, 22, 2]
+  angles: [0, 0, 0]
+  slope: 0.5
+  plane_constraints:
+  - normal: [0, 0, 1]
+    point: [0, 0, 0]
+  - normal: [0, 0, -1]
+    point: [0, 0, 4]

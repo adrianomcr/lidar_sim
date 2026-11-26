@@ -6,7 +6,17 @@
 
 sim_lidar:
   world_frame: world
-  lidar_frame: lidar
+  lidar_frame: lidar          # frame_id of velodyne_points
+  # Child of the ground-truth TF world_frame -> tf_child_frame. Same as lidar_frame by default,
+  # so RViz can place the cloud. A SLAM that also parents lidar (odom -> lidar) should use
+  # another name, such as lidar_gt. The cloud stays in lidar_frame either way.
+  tf_child_frame: lidar
+  # Per-point timestamp in velodyne_points. The value is the offset from the start of the
+  # revolution. sim keeps this simulator's original field. The other two match the ROS drivers:
+  #   sim:      field "time", float64 (datatype 8), seconds
+  #   velodyne: field "time", float32 (datatype 7), seconds
+  #   ouster:   field "t",    uint32  (datatype 6), nanoseconds
+  point_time: sim
 
   scan_rate: 10.0             # revolutions per second [Hz]
   num_azimuth_steps: 1024     # firings per revolution (about 0.35 deg)
